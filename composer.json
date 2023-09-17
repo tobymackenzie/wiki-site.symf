@@ -1,6 +1,6 @@
 {
 	"name": "tjm/wiki-site"
-	,"description": "Web-site front-end interface for `tjm/wiki` using Symfony."
+	,"description": "Web-site front-end interface for a folder of markdown files, optionally managed with `tjm/wiki`, using Symfony."
 	,"authors": [
 		{
 			"name": "Toby Mackenzie"
