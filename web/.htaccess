@@ -1,0 +1,22 @@
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+	##==serve files and directories, except root
+	RewriteCond %{REQUEST_FILENAME} -f
+	RewriteRule .? - [L]
+	RewriteCond %{REQUEST_FILENAME} -d
+	RewriteCond %{REQUEST_URI} !^/?$
+	RewriteRule .? - [L]
+	##==route all other request through index file
+	RewriteRule ^ %{ENV:BASE}/index.php [L]
+</IfModule>
+<IfModule !mod_rewrite.c>
+	<IfModule mod_alias.c>
+		##==temporary fallback if mod_rewrite isn't available.  URLs will show with 'index.php' prepended
+		RedirectMatch 302 ^/$ /index.php/
+	</IfModule>
+</IfModule>
+
+##==disable Multiviews to prevent '/index' from resolving to '/index.php', etc
+<IfModule mod_negotiation.c>
+	Options -MultiViews
+</IfModule>

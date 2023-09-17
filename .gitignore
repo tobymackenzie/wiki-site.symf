@@ -1,0 +1,9 @@
+*.swo
+*.swp
+*~
+.DS_Store
+/.phpunit.result.cache
+/composer.lock
+/var/
+/vendor/
+/wiki/

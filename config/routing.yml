@@ -1,0 +1,5 @@
+tjm_wiki:
+  path: '{path}'
+  controller: 'TJM\WikiSite\WikiSite::viewFileAction'
+  requirements:
+    path: '.*'

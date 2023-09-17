@@ -1,0 +1,32 @@
+framework:
+  secret: '12345'
+  session:
+    storage_id: session.storage.mock_file
+  test: true
+twig: ~
+services:
+  _defaults:
+    autoconfigure: true
+    autowire: true
+    public: true
+  League\CommonMark\CommonMarkConverter: ~
+  logger:
+    alias: Psr\Log\NullLogger
+  Psr\Log\NullLogger: ~
+  TJM\Wiki\Wiki:
+    arguments: ['%kernel.project_dir%/tests/tmp']
+  TJM\WikiSite\FormatConverter\MarkdownConverter:
+    arguments: ['@League\CommonMark\CommonMarkConverter']
+  TJM\WikiSite\WikiSite:
+    arguments:
+      $opts:
+        converters:
+          - '@TJM\WikiSite\FormatConverter\MarkdownConverter'
+        router: '@router'
+        twig: '@twig'
+    tags:
+      - 'controller.service_arguments'
+      -
+        event: 'kernel.exception'
+        method: 'handleException'
+        name: 'kernel.event_listener'

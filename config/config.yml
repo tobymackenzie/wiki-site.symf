@@ -1,0 +1,63 @@
+parameters:
+  env(APP_SECRET): 'qwoirekjwruskdfj'
+framework:
+  secret: '%env(APP_SECRET)%'
+  session: ~
+twig: ~
+services:
+  _defaults:
+    autoconfigure: true
+    autowire: true
+  League\CommonMark\Environment\Environment:
+    arguments:
+      -
+        allow_unsafe_links: false
+        table:
+          wrap:
+            attributes:
+              class: 'tableWrap'
+            enabled: true
+            tag: div
+        table_of_contents:
+          min_heading_level: 2
+    calls:
+      - addExtension: ['@League\CommonMark\Extension\Attributes\AttributesExtension']
+      - addExtension: ['@League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension']
+      - addExtension: ['@League\CommonMark\Extension\DescriptionList\DescriptionListExtension']
+      - addExtension: ['@League\CommonMark\Extension\Footnote\FootnoteExtension']
+      - addExtension: ['@League\CommonMark\Extension\FrontMatter\FrontMatterExtension']
+      # - addExtension: ['@League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension']
+      # - addExtension: ['@League\CommonMark\Extension\Strikethrough\StrikethroughExtension']
+      - addExtension: ['@League\CommonMark\Extension\Table\TableExtension']
+      #- addExtension: ['@League\CommonMark\Extension\TableOfContents\TableOfContentsExtension']
+  League\CommonMark\Extension\Attributes\AttributesExtension: ~
+  League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension: ~
+  League\CommonMark\Extension\DescriptionList\DescriptionListExtension: ~
+  League\CommonMark\Extension\Footnote\FootnoteExtension: ~
+  League\CommonMark\Extension\FrontMatter\FrontMatterExtension: ~
+  # League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension: ~
+  # League\CommonMark\Extension\Strikethrough\StrikethroughExtension: ~
+  League\CommonMark\Extension\Table\TableExtension: ~
+  #League\CommonMark\Extension\TableOfContents\TableOfContentsExtension: ~
+  League\CommonMark\MarkdownConverter:
+    arguments: ['@League\CommonMark\Environment\Environment']
+  logger:
+    alias: Psr\Log\NullLogger
+  Psr\Log\NullLogger: ~
+  TJM\Wiki\Wiki:
+    arguments: ['%kernel.project_dir%/wiki']
+  TJM\WikiSite\FormatConverter\MarkdownConverter:
+    arguments: ['@League\CommonMark\MarkdownConverter']
+  TJM\WikiSite\WikiSite:
+    arguments:
+      $opts:
+        converters:
+          - '@TJM\WikiSite\FormatConverter\MarkdownConverter'
+        router: '@router'
+        twig: '@twig'
+    tags:
+      - 'controller.service_arguments'
+      -
+        event: 'kernel.exception'
+        method: 'handleException'
+        name: 'kernel.event_listener'
