@@ -33,34 +33,34 @@ class WikiSiteTest extends TestCase{
 		);
 	}
 
-	public function testNotFoundViewFileAction(){
+	public function testNotFoundViewAction(){
 		$wsite = $this->getWikiSite();
 		$wsite->getWiki()->writeFile(new File([
 			'content'=> 'hello world',
 			'path'=> '/foo.md',
 		]));
 		$this->expectException(NotFoundHttpException::class);
-		$wsite->viewFileAction('/bar');
+		$wsite->viewAction('/bar');
 	}
-	public function testFoundViewFileAction(){
+	public function testFoundViewAction(){
 		$wsite = $this->getWikiSite();
 		$wsite->getWiki()->writeFile(new File([
 			'path'=> '/foo.md',
 			'content'=> 'hello world',
 		]));
-		$response = $wsite->viewFileAction('/foo');
+		$response = $wsite->viewAction('/foo');
 		$this->assertEquals(200, $response->getStatusCode());
 		$this->assertMatchesRegularExpression('/^<\!doctype html>/', $response->getContent());
 		$this->assertMatchesRegularExpression('/hello world/', $response->getContent());
 	}
-	public function testNoConverterFoundViewFileAction(){
+	public function testNoConverterFoundViewAction(){
 		$wsite = $this->getWikiSite();
 		$wsite->getWiki()->writeFile(new File([
 			'content'=> 'hello world',
 			'path'=> '/foo.md',
 		]));
 		$this->expectException(NotFoundHttpException::class);
-		$wsite->viewFileAction('/foo.asdf');
+		$wsite->viewAction('/foo.asdf');
 	}
 	public function testRedirectHome(){
 		$wsite = $this->getWikiSite();
@@ -68,7 +68,7 @@ class WikiSiteTest extends TestCase{
 			'content'=> 'hello world',
 			'path'=> '/index',
 		]));
-		$response = $wsite->viewFileAction('/index');
+		$response = $wsite->viewAction('/index');
 		$this->assertEquals(302, $response->getStatusCode());
 	}
 	public function testRedirectHTMLExtension(){
@@ -77,7 +77,7 @@ class WikiSiteTest extends TestCase{
 			'content'=> 'hello world',
 			'path'=> '/foo.md',
 		]));
-		$response = $wsite->viewFileAction('/foo.html');
+		$response = $wsite->viewAction('/foo.html');
 		$this->assertEquals(302, $response->getStatusCode());
 	}
 	public function testRedirectTrailingSlash(){
@@ -86,7 +86,7 @@ class WikiSiteTest extends TestCase{
 			'content'=> 'hello world',
 			'path'=> '/foo.md',
 		]));
-		$response = $wsite->viewFileAction('/foo/');
+		$response = $wsite->viewAction('/foo/');
 		$this->assertEquals(302, $response->getStatusCode());
 	}
 }

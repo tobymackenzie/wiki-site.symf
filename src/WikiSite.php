@@ -46,7 +46,7 @@ class WikiSite{
 	/*=====
 	==controller
 	=====*/
-	public function viewFileAction($path){
+	public function viewAction($path){
 		if(substr($path, 0, 1) !== '/'){
 			$path = '/' . $path;
 		}
