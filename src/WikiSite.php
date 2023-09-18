@@ -23,6 +23,8 @@ class WikiSite{
 	protected string $name = 'TJM Wiki';
 	protected ?RouterInterface $router = null;
 	protected ?Twig_Environment $twig = null;
+	protected string $viewRoute = 'tjm_wiki';
+	protected string $viewTemplate = '@TJMWikiSite/view.html.twig';
 	protected Wiki $wiki;
 
 	public function __construct(Wiki $wiki, array $opts = []){
@@ -49,7 +51,7 @@ class WikiSite{
 			$path = '/' . $path;
 		}
 		if($path === $this->homePage){
-			return new RedirectResponse($this->getRoute('tjm_wiki', ['path'=> '/']), 302);
+			return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> '/']), 302);
 		}
 		if($path === '/'){
 			$path = $this->homePage;
@@ -68,9 +70,9 @@ class WikiSite{
 		}
 		if(isset($file)){
 			if($extension === 'html'){
-				return new RedirectResponse($this->getRoute('tjm_wiki', ['path'=> $pagePath]), 302);
+				return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $pagePath]), 302);
 			}elseif(substr($path, -1) === '/'){
-				return new RedirectResponse($this->getRoute('tjm_wiki', ['path'=> $pagePath]), 302);
+				return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $pagePath]), 302);
 			}
 			$response = new Response();
 			try{
@@ -103,7 +105,7 @@ class WikiSite{
 							'pagePath'=> substr($pagePath, 1),
 							'wikiName'=> $this->name,
 						];
-						$content = $this->twig->render('@TJMWikiSite/view.html.twig', $data);
+						$content = $this->twig->render($this->viewTemplate, $data);
 					}else{
 						$content = "<!doctype html><title>{$name} - {$this->name}</title>{$content}";
 					}
@@ -157,7 +159,7 @@ class WikiSite{
 	protected function getRoute($name, $opts, $abs = UrlGeneratorInterface::ABSOLUTE_PATH){
 		if($this->router){
 			return str_replace('//', '/', $this->router->generate($name, $opts, $abs));
-		}elseif($name === 'tjm_wiki' && isset($opts['path'])){
+		}elseif($name === $this->viewRoute && isset($opts['path'])){
 			return $opts['path'];
 		}
 	}
