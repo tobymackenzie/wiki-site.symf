@@ -15,13 +15,13 @@ services:
   Psr\Log\NullLogger: ~
   TJM\Wiki\Wiki:
     arguments: ['%kernel.project_dir%/tests/tmp']
-  TJM\WikiSite\FormatConverter\MarkdownConverter:
+  TJM\WikiSite\FormatConverter\MarkdownToHtmlConverter:
     arguments: ['@League\CommonMark\CommonMarkConverter']
   TJM\WikiSite\WikiSite:
     arguments:
       $opts:
         converters:
-          - '@TJM\WikiSite\FormatConverter\MarkdownConverter'
+          - '@TJM\WikiSite\FormatConverter\MarkdownToHtmlConverter'
         router: '@router'
         twig: '@twig'
     tags:

@@ -5,7 +5,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use TJM\Wiki\File;
 use TJM\Wiki\Wiki;
-use TJM\WikiSite\FormatConverter\MarkdownConverter;
+use TJM\WikiSite\FormatConverter\MarkdownToHtmlConverter;
 use TJM\WikiSite\WikiSite;
 
 class WikiSiteTest extends TestCase{
@@ -27,7 +27,7 @@ class WikiSiteTest extends TestCase{
 			])
 			,[
 				'converters'=> [
-					new MarkdownConverter(),
+					new MarkdownToHtmlConverter(),
 				],
 			]
 		);
