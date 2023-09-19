@@ -149,6 +149,14 @@ class WikiSite{
 		}
 		throw new Exception("No converter found to convert from {$file->getExtension()} to {$to}");
 	}
+	protected function canConvertFile(File $file, $to){
+		foreach($this->converters as $converter){
+			if($converter->supports($file->getExtension(), $to)){
+				return true;
+			}
+		}
+		return false;
+	}
 
 	/*=====
 	==routing
