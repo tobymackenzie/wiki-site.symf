@@ -71,6 +71,17 @@ class WikiSite{
 		if(isset($file)){
 			if($extension === 'html' || substr($path, -1) === '/'){
 				return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $pagePath]), 302);
+			//--force lowercase of extension if uppercase
+			}elseif(
+				$extension && $extension !== strtolower($extension)
+				&& (
+					strtolower($extension) === strtolower($file->getExtension())
+					|| $this->canConvertFile($file, $extension)
+				)
+			){
+				$path = explode('.', $path, -1);
+				$path = implode('.', $path) . '.' . strtolower($extension);
+				return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $path]), 302);
 			}
 			$response = new Response();
 			try{

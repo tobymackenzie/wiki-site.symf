@@ -108,4 +108,18 @@ class KernelTest extends WebTestCase{
 		$client->request('GET', '/foo/');
 		$this->assertResponseRedirects('/foo');
 	}
+	public function testRedirectUppercaseExtension(){
+		$client = static::createClient();
+		static::getContainer()->get(WikiSite::class)->getWiki()->writeFile(new File([
+			'content'=> 'hello world',
+			'path'=> '/foo.md',
+		]));
+		$client->followRedirects(false);
+		$client->request('GET', '/foo.XHTML');
+		$this->assertResponseRedirects('/foo.xhtml');
+		$client->request('GET', '/foo.MD');
+		$this->assertResponseRedirects('/foo.md');
+		$client->request('GET', '/foo.Md');
+		$this->assertResponseRedirects('/foo.md');
+	}
 }

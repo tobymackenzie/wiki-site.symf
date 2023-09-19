@@ -9,7 +9,7 @@ class MarkdownToHtmlConverter implements ConverterInterface{
 		$this->converter = $converter ?? new CommonMarkConverter();
 	}
 	public function supports(string $from, string $to){
-		return $from === 'md' && in_array(strtolower($to), ['html', 'xhtml']);
+		return strtolower($from) === 'md' && in_array(strtolower($to), ['html', 'xhtml']);
 	}
 	public function convert(string $content, string $from = null, string $to = null){
 		return $this->converter->convert($content);
