@@ -69,9 +69,7 @@ class WikiSite{
 			}
 		}
 		if(isset($file)){
-			if($extension === 'html'){
-				return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $pagePath]), 302);
-			}elseif(substr($path, -1) === '/'){
+			if($extension === 'html' || substr($path, -1) === '/'){
 				return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $pagePath]), 302);
 			}
 			$response = new Response();
