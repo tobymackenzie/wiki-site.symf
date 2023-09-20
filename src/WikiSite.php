@@ -132,6 +132,22 @@ class WikiSite{
 			}
 			return $response;
 		}
+		if($extension){
+			$canonical = $this->wiki->getCanonicalPath($path);
+		}
+		if(empty($canonical)){
+			$canonical = $this->wiki->getCanonicalPath($pagePath);
+			if($extension){
+				if($this->canConvertFile($this->wiki->getPage($canonical), $extension)){
+					$canonical = $canonical . '.' . strtolower($extension);
+				}else{
+					$canonical = null;
+				}
+			}
+		}
+		if($canonical){
+			return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $canonical]), 302);
+		}
 		throw new NotFoundHttpException();
 	}
 	public function handleException(ExceptionEvent $event){
