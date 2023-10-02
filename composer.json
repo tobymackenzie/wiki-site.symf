@@ -23,6 +23,7 @@
 	,"require": {
 		"php": ">=7.4"
 		,"league/commonmark": "^2"
+		,"league/html-to-markdown": "^5"
 		,"symfony/asset": "^5.4"
 		,"symfony/framework-bundle": "^5.4"
 		,"symfony/mime": "^5.4"

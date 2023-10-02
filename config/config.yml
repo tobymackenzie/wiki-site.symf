@@ -41,17 +41,25 @@ services:
   #League\CommonMark\Extension\TableOfContents\TableOfContentsExtension: ~
   League\CommonMark\MarkdownConverter:
     arguments: ['@League\CommonMark\Environment\Environment']
+  League\HTMLToMarkdown\HtmlConverter:
+    arguments: [{'hard_break': true, 'strip_tags': true}]
   logger:
     alias: Psr\Log\NullLogger
   Psr\Log\NullLogger: ~
   TJM\Wiki\Wiki:
     arguments: ['%kernel.project_dir%/wiki']
+  TJM\WikiSite\FormatConverter\HtmlToMarkdownConverter:
+    arguments: ['@League\HTMLToMarkdown\HtmlConverter']
+  TJM\WikiSite\FormatConverter\MarkdownToCleanMarkdownConverter:
+    arguments: ['@TJM\WikiSite\FormatConverter\MarkdownToHtmlConverter', '@TJM\WikiSite\FormatConverter\HtmlToMarkdownConverter']
   TJM\WikiSite\FormatConverter\MarkdownToHtmlConverter:
     arguments: ['@League\CommonMark\MarkdownConverter']
   TJM\WikiSite\WikiSite:
     arguments:
       $opts:
         converters:
+          - '@TJM\WikiSite\FormatConverter\HtmlToMarkdownConverter'
+          - '@TJM\WikiSite\FormatConverter\MarkdownToCleanMarkdownConverter'
           - '@TJM\WikiSite\FormatConverter\MarkdownToHtmlConverter'
         router: '@router'
         twig: '@twig'

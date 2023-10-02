@@ -5,6 +5,8 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use TJM\Wiki\File;
 use TJM\Wiki\Wiki;
+use TJM\WikiSite\FormatConverter\HtmlToMarkdownConverter;
+use TJM\WikiSite\FormatConverter\MarkdownToCleanMarkdownConverter;
 use TJM\WikiSite\FormatConverter\MarkdownToHtmlConverter;
 use TJM\WikiSite\WikiSite;
 
@@ -27,6 +29,8 @@ class WikiSiteTest extends TestCase{
 			])
 			,[
 				'converters'=> [
+					new HtmlToMarkdownConverter(),
+					new MarkdownToCleanMarkdownConverter(),
 					new MarkdownToHtmlConverter(),
 				],
 			]
@@ -52,6 +56,26 @@ class WikiSiteTest extends TestCase{
 		$this->assertEquals(200, $response->getStatusCode());
 		$this->assertMatchesRegularExpression('/^<\!doctype html>/', $response->getContent());
 		$this->assertMatchesRegularExpression('/hello world/', $response->getContent());
+	}
+	public function testFoundMarkdownViewAction(){
+		$wsite = $this->getWikiSite();
+		$wsite->getWiki()->writeFile(new File([
+			'path'=> '/foo.md',
+			'content'=> 'hello <i>world</i>',
+		]));
+		$response = $wsite->viewAction('/foo.md');
+		$this->assertEquals(200, $response->getStatusCode());
+		$this->assertEquals('hello <i>world</i>', $response->getContent());
+	}
+	public function testFoundTxtViewAction(){
+		$wsite = $this->getWikiSite();
+		$wsite->getWiki()->writeFile(new File([
+			'path'=> '/foo.md',
+			'content'=> '<span>hello</span> <i>world</i>',
+		]));
+		$response = $wsite->viewAction('/foo.txt');
+		$this->assertEquals(200, $response->getStatusCode());
+		$this->assertEquals('hello *world*', $response->getContent());
 	}
 	public function testNoConverterFoundViewAction(){
 		$wsite = $this->getWikiSite();
