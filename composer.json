@@ -12,12 +12,12 @@
 	,"autoload": {
 		"psr-4": {
 			"TJM\\WikiSite\\": "src"
+			,"TJM\\WikiSiteBundle\\": "src"
 		}
 	}
 	,"autoload-dev": {
 		"psr-4": {
 			"TJM\\WikiSite\\Tests\\": "tests"
-			,"TJM\\WikiSiteBundle\\": "src"
 		}
 	}
 	,"require": {
