@@ -8,7 +8,7 @@
 </head>
 <body>
 	<header class="appHeader">
-		<a class="logo" href="{{path('tjm_wiki', {path: ''})}}">{{wikiName}}</a>
+		<a class="logo" href="{{path(wikiRoute, {path: ''})}}">{{wikiName}}</a>
 	</header>
 	{% if block('content') is defined %}
 	{{block('content')|raw}}

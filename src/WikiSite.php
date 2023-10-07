@@ -113,6 +113,7 @@ class WikiSite{
 							'content'=> $content,
 							'pagePath'=> substr($pagePath, 1),
 							'wikiName'=> $this->name,
+							'wikiRoute'=> $this->viewRoute,
 						];
 						$content = $this->twig->render($this->viewTemplate, $data);
 					}else{
