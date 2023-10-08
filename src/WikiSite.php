@@ -22,6 +22,7 @@ class WikiSite{
 	protected ?MimeTypes $mimeTypes = null;
 	protected string $name = 'TJM Wiki';
 	protected ?RouterInterface $router = null;
+	protected string $shellTemplate = '@TJMWikiSite/shell.html.twig';
 	protected ?Twig_Environment $twig = null;
 	protected string $viewRoute = 'tjm_wiki';
 	protected string $viewTemplate = '@TJMWikiSite/view.html.twig';
@@ -112,6 +113,7 @@ class WikiSite{
 							'name'=> $name,
 							'content'=> $content,
 							'pagePath'=> substr($pagePath, 1),
+							'shellTemplate'=> $this->shellTemplate,
 							'wikiName'=> $this->name,
 							'wikiRoute'=> $this->viewRoute,
 						];
