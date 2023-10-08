@@ -1,0 +1,7 @@
+services:
+  _defaults:
+    autoconfigure: true
+    autowire: true
+  TJM\WikiSite\FormatConverter\HtmlToMarkdownConverter: ~
+  TJM\WikiSite\FormatConverter\MarkdownToCleanMarkdownConverter: ~
+  TJM\WikiSite\FormatConverter\MarkdownToHtmlConverter: ~

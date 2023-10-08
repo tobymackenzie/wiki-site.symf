@@ -1,0 +1,6 @@
+services:
+  _defaults:
+    autoconfigure: true
+    autowire: true
+  League\HTMLToMarkdown\HtmlConverter:
+    arguments: [{'hard_break': true, 'strip_tags': true}]
