@@ -86,30 +86,32 @@ class WikiSite{
 			}
 			$response = new Response();
 			try{
-				$format = $extension ?: 'html';
-				if($format === 'html' || $format === 'xhtml'){
+				if(empty($extension)){
+					$extension = 'html';
+				}
+				if($extension === 'html' || $extension === 'xhtml'){
 					if($path === $this->homePage){
 						$name = $this->name;
 					}else{
 						//--use path as name
 						$name = $file->getPath();
 						//---without extension
-						$extension = pathinfo($file->getPath(), PATHINFO_EXTENSION);
-						if($extension){
-							$name = substr($name, 0, -1 * (strlen($extension) + 1));
+						$fileExtension = pathinfo($file->getPath(), PATHINFO_EXTENSION);
+						if($fileExtension){
+							$name = substr($name, 0, -1 * (strlen($fileExtension) + 1));
 						}
 						//---switch '/' to '-', reverse
 						$name = implode(' - ', array_reverse(explode('/', $name)));
 						//---title case
 						$name = ucwords($name);
 					}
-					$content = $this->convertFile($file, $format);
+					$content = $this->convertFile($file, $extension);
 					if(strpos($content, '<h1') === false){
 						$content = "<h1>{$name}</h1>\n{$content}";
 					}
 					if($this->twig){
 						$data = [
-							'format'=> $format,
+							'format'=> $extension,
 							'name'=> $name,
 							'content'=> $content,
 							'pagePath'=> substr($pagePath, 1),
@@ -121,7 +123,7 @@ class WikiSite{
 					}else{
 						$content = "<!doctype html><title>{$name} - {$this->name}</title>{$content}";
 					}
-					$response->headers->set('Content-Type', $this->getMimeType($format));
+					$response->headers->set('Content-Type', $this->getMimeType($extension));
 					$response->setContent($content);
 				}elseif($extension === $file->getExtension()){
 					$response->setContent($file->getContent());
