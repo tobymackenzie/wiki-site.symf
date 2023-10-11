@@ -123,12 +123,12 @@ class WikiSite{
 					}else{
 						$content = "<!doctype html><title>{$name} - {$this->name}</title>{$content}";
 					}
-					$response->setContent($content);
 				}elseif($extension === $file->getExtension()){
-					$response->setContent($file->getContent());
+					$content = $file->getContent();
 				}else{
-					$response->setContent($this->convertFile($file, $extension));
+					$content = $this->convertFile($file, $extension);
 				}
+				$response->setContent($content);
 				$response->headers->set('Content-Type', $this->getMimeType($extension));
 			}catch(Exception $e){
 				throw new NotFoundHttpException();
