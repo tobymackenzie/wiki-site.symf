@@ -12,6 +12,7 @@ use TJM\WikiSite\WikiSite;
 
 class WikiSiteTest extends TestCase{
 	const WIKI_DIR = __DIR__ . '/tmp';
+	protected $mdTemplatePrefix = '';
 
 	static public function setUpBeforeClass(): void{
 		mkdir(self::WIKI_DIR);
@@ -54,7 +55,7 @@ class WikiSiteTest extends TestCase{
 		]));
 		$response = $wsite->viewAction('/foo');
 		$this->assertEquals(200, $response->getStatusCode());
-		$this->assertMatchesRegularExpression('/^<\!doctype html>/', $response->getContent());
+		$this->assertMatchesRegularExpression('/^<\!doctype html>/i', $response->getContent());
 		$this->assertMatchesRegularExpression('/hello world/', $response->getContent());
 	}
 	public function testFoundMarkdownViewAction(){
@@ -65,7 +66,7 @@ class WikiSiteTest extends TestCase{
 		]));
 		$response = $wsite->viewAction('/foo.md');
 		$this->assertEquals(200, $response->getStatusCode());
-		$this->assertEquals('hello <i>world</i>', $response->getContent());
+		$this->assertEquals($this->mdTemplatePrefix . 'hello <i>world</i>', $response->getContent());
 	}
 	public function testFoundTxtViewAction(){
 		$wsite = $this->getWikiSite();

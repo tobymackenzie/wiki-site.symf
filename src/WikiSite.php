@@ -22,10 +22,10 @@ class WikiSite{
 	protected ?MimeTypes $mimeTypes = null;
 	protected string $name = 'TJM Wiki';
 	protected ?RouterInterface $router = null;
-	protected string $shellTemplate = '@TJMWikiSite/shell.html.twig';
+	protected ?string $shellTemplate = '@TJMWikiSite/shell';
 	protected ?Twig_Environment $twig = null;
 	protected string $viewRoute = 'tjm_wiki';
-	protected string $viewTemplate = '@TJMWikiSite/view.html.twig';
+	protected ?string $viewTemplate = '@TJMWikiSite/view';
 	protected Wiki $wiki;
 
 	public function __construct(Wiki $wiki, array $opts = []){
@@ -85,54 +85,54 @@ class WikiSite{
 				return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $path]), 302);
 			}
 			$response = new Response();
-			try{
-				if(empty($extension)){
-					$extension = 'html';
-				}
-				if($extension === 'html' || $extension === 'xhtml'){
-					if($path === $this->homePage){
-						$name = $this->name;
-					}else{
-						//--use path as name
-						$name = $file->getPath();
-						//---without extension
-						$fileExtension = pathinfo($file->getPath(), PATHINFO_EXTENSION);
-						if($fileExtension){
-							$name = substr($name, 0, -1 * (strlen($fileExtension) + 1));
-						}
-						//---switch '/' to '-', reverse
-						$name = implode(' - ', array_reverse(explode('/', $name)));
-						//---title case
-						$name = ucwords($name);
-					}
-					$content = $this->convertFile($file, $extension);
-					if(strpos($content, '<h1') === false){
-						$content = "<h1>{$name}</h1>\n{$content}";
-					}
-					if($this->twig){
-						$data = [
-							'format'=> $extension,
-							'name'=> $name,
-							'content'=> $content,
-							'pagePath'=> substr($pagePath, 1),
-							'shellTemplate'=> $this->shellTemplate,
-							'wikiName'=> $this->name,
-							'wikiRoute'=> $this->viewRoute,
-						];
-						$content = $this->twig->render($this->viewTemplate, $data);
-					}else{
-						$content = "<!doctype html><title>{$name} - {$this->name}</title>{$content}";
-					}
-				}elseif($extension === $file->getExtension()){
-					$content = $file->getContent();
-				}else{
-					$content = $this->convertFile($file, $extension);
-				}
-				$response->setContent($content);
-				$response->headers->set('Content-Type', $this->getMimeType($extension));
-			}catch(Exception $e){
+			if(empty($extension)){
+				$extension = 'html';
+			}
+			if($this->canConvertFile($file, $extension)){
+				$content = $this->convertFile($file, $extension);
+			}elseif($extension === $file->getExtension()){
+				$content = $file->getContent();
+			}else{
 				throw new NotFoundHttpException();
 			}
+			$isHtmlish = $extension === 'html' || $extension === 'xhtml';
+			$viewTemplate = $this->getTemplateForExtension($this->viewTemplate, $extension);
+			if($viewTemplate || $isHtmlish){
+				if($path === $this->homePage){
+					$name = $this->name;
+				}else{
+					//--use path as name
+					$name = $file->getPath();
+					//---without extension
+					$fileExtension = pathinfo($file->getPath(), PATHINFO_EXTENSION);
+					if($fileExtension){
+						$name = substr($name, 0, -1 * (strlen($fileExtension) + 1));
+					}
+					//---switch '/' to '-', reverse
+					$name = implode(' - ', array_reverse(explode('/', $name)));
+					//---title case
+					$name = ucwords($name);
+				}
+				if($isHtmlish && strpos($content, '<h1') === false){
+					$content = "<h1>{$name}</h1>\n{$content}";
+				}
+			}
+			if($viewTemplate){
+				$data = [
+					'format'=> $extension,
+					'name'=> $name,
+					'content'=> $content,
+					'pagePath'=> substr($pagePath, 1),
+					'shellTemplate'=> $this->getTemplateForExtension($this->shellTemplate, $extension),
+					'wikiName'=> $this->name,
+					'wikiRoute'=> $this->viewRoute,
+				];
+				$content = $this->twig->render($viewTemplate, $data);
+			}elseif($isHtmlish){
+				$content = "<!doctype html><title>{$name} - {$this->name}</title>{$content}";
+			}
+			$response->setContent($content);
+			$response->headers->set('Content-Type', $this->getMimeType($extension));
 			return $response;
 		}
 		if($extension){
@@ -198,6 +198,34 @@ class WikiSite{
 		}elseif($name === $this->viewRoute && isset($opts['path'])){
 			return $opts['path'];
 		}
+	}
+
+	/*=====
+	==templating
+	=====*/
+	protected function getTemplateForExtension(string $template, string $extension){
+		if($template && $this->twig){
+			$templateOpts = [];
+			if(preg_match('/\.([\w]+)\.twig$/i', $template, $matches)){
+				if($matches[1] !== $extension){
+					$templateOpts[] = preg_replace('/\.' . $matches[1] . '\.twig$/i', ".{$extension}.twig", $template);
+				}
+				if(
+					$matches[1] === $extension
+					|| ($matches[1] === 'html' && $extension === 'xhtml')
+				){
+					$templateOpts[] = $template;
+				}
+			}else{
+				$templateOpts[] = $template . '.' . $extension . '.twig';
+			}
+			foreach($templateOpts as $template){
+				if($this->twig->getLoader()->exists($template)){
+					return $template;
+				}
+			}
+		}
+		return null;
 	}
 
 	/*=====
