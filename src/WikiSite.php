@@ -216,7 +216,7 @@ class WikiSite{
 	/*=====
 	==templating
 	=====*/
-	protected function getTemplateForExtension(string $template, string $extension){
+	protected function getTemplateForExtension(?string $template, string $extension){
 		if($template && $this->twig){
 			$templateOpts = [];
 			if(preg_match('/\.([\w]+)\.twig$/i', $template, $matches)){
