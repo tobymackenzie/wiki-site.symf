@@ -10,14 +10,17 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\Mime\MimeTypes;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use TJM\Wiki\Wiki;
 use TJM\Wiki\File;
 use TJM\WikiSite\FormatConverter\ConverterInterface;
+use TJM\WikiSite\Event\ViewDataEvent;
 use Twig\Environment as Twig_Environment;
 
 class WikiSite{
 	const CONFIG_DIR = __DIR__ . '/../config';
 	protected array $converters = [];
+	protected ?EventDispatcherInterface $eventDispatcher = null;
 	protected string $homePage = '/index';
 	protected ?MimeTypes $mimeTypes = null;
 	protected string $name = 'TJM Wiki';
@@ -35,6 +38,11 @@ class WikiSite{
 				$this->$opt = $value;
 			}
 		}
+	}
+
+	//-# primarily for testing
+	public function getEventDispatcher(){
+		return $this->eventDispatcher;
 	}
 
 	public function getName(){
@@ -127,6 +135,11 @@ class WikiSite{
 					'wikiName'=> $this->name,
 					'wikiRoute'=> $this->viewRoute,
 				];
+				if($this->getEventDispatcher()){
+					$event = new ViewDataEvent($data, $path);
+					$this->getEventDispatcher()->dispatch($event);
+					$data = $event->getData();
+				}
 				$content = $this->twig->render($viewTemplate, $data);
 			}elseif($isHtmlish){
 				$content = "<!doctype html><title>{$name} - {$this->name}</title>{$content}";

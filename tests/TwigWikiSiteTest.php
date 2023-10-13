@@ -9,6 +9,8 @@ use TJM\WikiSite\WikiSite;
 class TwigWikiSiteTest extends WikiSiteTest{
 	use TwigTestTrait;
 	protected $mdTemplatePrefix = "test\n";
+	protected $txtTemplatePrefix = "txt\n";
+	protected $txtTemplateSuffix = "\ntxtend\n";
 	protected function getWikiSite(){
 		return new WikiSite(
 			new Wiki([

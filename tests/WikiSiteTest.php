@@ -13,6 +13,8 @@ use TJM\WikiSite\WikiSite;
 class WikiSiteTest extends TestCase{
 	use TestTrait;
 	protected $mdTemplatePrefix = '';
+	protected $txtTemplatePrefix = '';
+	protected $txtTemplateSuffix = '';
 
 	protected function getWikiSite(){
 		return new WikiSite(
@@ -67,7 +69,7 @@ class WikiSiteTest extends TestCase{
 		]));
 		$response = $wsite->viewAction('/foo.txt');
 		$this->assertEquals(200, $response->getStatusCode());
-		$this->assertEquals('hello *world*', $response->getContent());
+		$this->assertEquals($this->txtTemplatePrefix . 'hello *world*' . $this->txtTemplateSuffix, $response->getContent());
 	}
 	public function testNoConverterFoundViewAction(){
 		$wsite = $this->getWikiSite();
