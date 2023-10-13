@@ -11,18 +11,9 @@ use TJM\WikiSite\FormatConverter\MarkdownToHtmlConverter;
 use TJM\WikiSite\WikiSite;
 
 class WikiSiteTest extends TestCase{
-	const WIKI_DIR = __DIR__ . '/tmp';
+	use TestTrait;
 	protected $mdTemplatePrefix = '';
 
-	static public function setUpBeforeClass(): void{
-		mkdir(self::WIKI_DIR);
-	}
-	protected function tearDown(): void{
-		shell_exec("rm -rf " . self::WIKI_DIR . "/.git && rm -rf " . self::WIKI_DIR . "/*");
-	}
-	static public function tearDownAfterClass(): void{
-		rmdir(self::WIKI_DIR);
-	}
 	protected function getWikiSite(){
 		return new WikiSite(
 			new Wiki([

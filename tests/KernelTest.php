@@ -10,18 +10,8 @@ use TJM\WikiSite\Kernel;
 use TJM\WikiSite\WikiSite;
 
 class KernelTest extends WebTestCase{
-	const WIKI_DIR = __DIR__ . '/tmp';
+	use TestTrait;
 
-	static public function setUpBeforeClass(): void{
-		mkdir(self::WIKI_DIR);
-	}
-	protected function tearDown(): void{
-		shell_exec("rm -rf " . self::WIKI_DIR . "/.git && rm -rf " . self::WIKI_DIR . "/*");
-		parent::tearDown();
-	}
-	static public function tearDownAfterClass(): void{
-		rmdir(self::WIKI_DIR);
-	}
 	protected static function createKernel(array $options = []): KernelInterface{
 		return new Kernel([
 			'config'=> __DIR__ . '/resources/config.yml',
