@@ -59,7 +59,7 @@ class WikiSiteTest extends TestCase{
 		]));
 		$response = $wsite->viewAction('/foo.md');
 		$this->assertEquals(200, $response->getStatusCode());
-		$this->assertEquals($this->mdTemplatePrefix . 'hello <i>world</i>', $response->getContent());
+		$this->assertEquals($this->mdTemplatePrefix . 'hello *world*', $response->getContent());
 	}
 	public function testFoundTxtViewAction(){
 		$wsite = $this->getWikiSite();
