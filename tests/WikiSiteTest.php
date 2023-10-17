@@ -59,7 +59,33 @@ class WikiSiteTest extends TestCase{
 		]));
 		$response = $wsite->viewAction('/foo.md');
 		$this->assertEquals(200, $response->getStatusCode());
-		$this->assertEquals($this->mdTemplatePrefix . 'hello *world*', $response->getContent());
+		$this->assertEquals($this->mdTemplatePrefix . "Foo\n==========\n\nhello *world*", $response->getContent());
+	}
+	public function testInsertHeadingViewAction(){
+		$wsite = $this->getWikiSite();
+		$wsite->getWiki()->writeFile(new File([
+			'path'=> '/foo.md',
+			'content'=> 'hello <i>world</i>',
+		]));
+		$response = $wsite->viewAction('/foo');
+		$this->assertEquals(200, $response->getStatusCode());
+		$this->assertMatchesRegularExpression(":<h1>Foo</h1>:", $response->getContent());
+		$response = $wsite->viewAction('/foo.md');
+		$this->assertEquals(200, $response->getStatusCode());
+		$this->assertEquals($this->mdTemplatePrefix . "Foo\n==========\n\nhello *world*", $response->getContent());
+	}
+	public function testNoInsertHeadingViewAction(){
+		$wsite = $this->getWikiSite();
+		$wsite->getWiki()->writeFile(new File([
+			'path'=> '/foo.md',
+			'content'=> "Bar\n======\nhello <i>world</i>",
+		]));
+		$response = $wsite->viewAction('/foo');
+		$this->assertEquals(200, $response->getStatusCode());
+		$this->assertMatchesRegularExpression(":<h1>Bar</h1>:", $response->getContent());
+		$response = $wsite->viewAction('/foo.md');
+		$this->assertEquals(200, $response->getStatusCode());
+		$this->assertEquals($this->mdTemplatePrefix . "Bar\n===\n\nhello *world*", $response->getContent());
 	}
 	public function testFoundTxtViewAction(){
 		$wsite = $this->getWikiSite();
@@ -69,7 +95,7 @@ class WikiSiteTest extends TestCase{
 		]));
 		$response = $wsite->viewAction('/foo.txt');
 		$this->assertEquals(200, $response->getStatusCode());
-		$this->assertEquals($this->txtTemplatePrefix . 'hello *world*' . $this->txtTemplateSuffix, $response->getContent());
+		$this->assertEquals($this->txtTemplatePrefix . "Foo\n==========\n\nhello *world*" . $this->txtTemplateSuffix, $response->getContent());
 	}
 	public function testNoConverterFoundViewAction(){
 		$wsite = $this->getWikiSite();

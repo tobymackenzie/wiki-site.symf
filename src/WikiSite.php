@@ -104,6 +104,7 @@ class WikiSite{
 				throw new NotFoundHttpException();
 			}
 			$isHtmlish = $extension === 'html' || $extension === 'xhtml';
+			$isTextish = $extension === 'md' || $extension === 'txt';
 			$viewTemplate = $this->getTemplateForExtension($this->viewTemplate, $extension);
 			if($viewTemplate || $isHtmlish){
 				if($path === $this->homePage){
@@ -123,6 +124,8 @@ class WikiSite{
 				}
 				if($isHtmlish && strpos($content, '<h1') === false){
 					$content = "<h1>{$name}</h1>\n{$content}";
+				}elseif($isTextish && strpos($content, "\n===") === false){
+					$content = "{$name}\n==========\n\n{$content}";
 				}
 			}
 			if($viewTemplate){
