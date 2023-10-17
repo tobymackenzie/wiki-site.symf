@@ -106,8 +106,13 @@ class WikiSite{
 			$isHtmlish = $extension === 'html' || $extension === 'xhtml';
 			$isTextish = $extension === 'md' || $extension === 'txt';
 			$viewTemplate = $this->getTemplateForExtension($this->viewTemplate, $extension);
-			if($viewTemplate || $isHtmlish){
-				if($path === $this->homePage){
+			if($viewTemplate || $isHtmlish || $isTextish){
+				if(
+					($isHtmlish && preg_match(':<h1.*>(.*)</h1>:i', $content, $matches))
+					|| ($isTextish && preg_match("/(.*)\n===[=]*\n/m", $content, $matches))
+				){
+					$name = $matches[1];
+				}elseif($path === $this->homePage){
 					$name = $this->name;
 				}else{
 					//--use path as name

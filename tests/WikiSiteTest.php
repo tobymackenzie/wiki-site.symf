@@ -87,6 +87,15 @@ class WikiSiteTest extends TestCase{
 		$this->assertEquals(200, $response->getStatusCode());
 		$this->assertEquals($this->mdTemplatePrefix . "Bar\n===\n\nhello *world*", $response->getContent());
 	}
+	public function testGetTitleFromHeadingForViewAction(){
+		$wsite = $this->getWikiSite();
+		$wsite->getWiki()->writeFile(new File([
+			'path'=> '/foo.md',
+			'content'=> "Bar\n======\nhello <i>world</i>",
+		]));
+		$response = $wsite->viewAction('/foo');
+		$this->assertMatchesRegularExpression(":<title>Bar - TJM Wiki</title>:", $response->getContent());
+	}
 	public function testFoundTxtViewAction(){
 		$wsite = $this->getWikiSite();
 		$wsite->getWiki()->writeFile(new File([
