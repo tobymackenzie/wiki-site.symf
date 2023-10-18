@@ -112,7 +112,7 @@ class WikiSite{
 					|| ($isTextish && preg_match("/(.*)\n===[=]*\n/m", $content, $matches))
 				){
 					$name = $matches[1];
-				}elseif($path === $this->homePage){
+				}elseif($pagePath === $this->homePage){
 					$name = $this->name;
 				}else{
 					//--use path as name
