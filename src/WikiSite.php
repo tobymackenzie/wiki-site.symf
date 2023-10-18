@@ -239,6 +239,9 @@ class WikiSite{
 				}
 			}else{
 				$templateOpts[] = $template . '.' . $extension . '.twig';
+				if($extension === 'xhtml'){
+					$templateOpts[] = $template . '.html.twig';
+				}
 			}
 			foreach($templateOpts as $template){
 				if($this->twig->getLoader()->exists($template)){
