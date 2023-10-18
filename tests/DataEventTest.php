@@ -42,6 +42,6 @@ class DataEventTest extends TestCase{
 		});
 		$response = $wsite->viewAction('/foo.txt');
 		$this->assertEquals(200, $response->getStatusCode());
-		$this->assertEquals("txt\nprefix: Foo\n==========\n\nhello *world* suffix\ntxtend\n", $response->getContent());
+		$this->assertEquals("txt\nprefix: Foo\n==========\n\nhello *world*\n suffix\ntxtend\n", $response->getContent());
 	}
 }

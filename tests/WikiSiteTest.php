@@ -55,11 +55,11 @@ class WikiSiteTest extends TestCase{
 		$wsite = $this->getWikiSite();
 		$wsite->getWiki()->writeFile(new File([
 			'path'=> '/foo.md',
-			'content'=> 'hello <i>world</i>',
+			'content'=> 'hello <i>world</i>. `<span>`, &c.',
 		]));
 		$response = $wsite->viewAction('/foo.md');
 		$this->assertEquals(200, $response->getStatusCode());
-		$this->assertEquals($this->mdTemplatePrefix . "Foo\n==========\n\nhello *world*", $response->getContent());
+		$this->assertEquals($this->mdTemplatePrefix . "Foo\n==========\n\nhello *world*. `<span>`, &c.\n", $response->getContent());
 	}
 	public function testInsertHeadingViewAction(){
 		$wsite = $this->getWikiSite();
@@ -72,26 +72,26 @@ class WikiSiteTest extends TestCase{
 		$this->assertMatchesRegularExpression(":<h1>Foo</h1>:", $response->getContent());
 		$response = $wsite->viewAction('/foo.md');
 		$this->assertEquals(200, $response->getStatusCode());
-		$this->assertEquals($this->mdTemplatePrefix . "Foo\n==========\n\nhello *world*", $response->getContent());
+		$this->assertEquals($this->mdTemplatePrefix . "Foo\n==========\n\nhello *world*\n", $response->getContent());
 	}
 	public function testNoInsertHeadingViewAction(){
 		$wsite = $this->getWikiSite();
 		$wsite->getWiki()->writeFile(new File([
 			'path'=> '/foo.md',
-			'content'=> "Bar\n======\nhello <i>world</i>",
+			'content'=> "Bar\n=====\n\nhello <i>world</i>",
 		]));
 		$response = $wsite->viewAction('/foo');
 		$this->assertEquals(200, $response->getStatusCode());
 		$this->assertMatchesRegularExpression(":<h1>Bar</h1>:", $response->getContent());
 		$response = $wsite->viewAction('/foo.md');
 		$this->assertEquals(200, $response->getStatusCode());
-		$this->assertEquals($this->mdTemplatePrefix . "Bar\n===\n\nhello *world*", $response->getContent());
+		$this->assertEquals($this->mdTemplatePrefix . "Bar\n=====\n\nhello *world*\n", $response->getContent());
 	}
 	public function testGetTitleFromHeadingForViewAction(){
 		$wsite = $this->getWikiSite();
 		$wsite->getWiki()->writeFile(new File([
 			'path'=> '/foo.md',
-			'content'=> "Bar\n======\nhello <i>world</i>",
+			'content'=> "Bar\n======\n\nhello <i>world</i>",
 		]));
 		$response = $wsite->viewAction('/foo');
 		$this->assertMatchesRegularExpression(":<title>Bar - TJM Wiki</title>:", $response->getContent());
@@ -100,11 +100,11 @@ class WikiSiteTest extends TestCase{
 		$wsite = $this->getWikiSite();
 		$wsite->getWiki()->writeFile(new File([
 			'path'=> '/foo.md',
-			'content'=> '<span>hello</span> <i>world</i>',
+			'content'=> '<span>hello</span> <i>world</i>, &c.',
 		]));
 		$response = $wsite->viewAction('/foo.txt');
 		$this->assertEquals(200, $response->getStatusCode());
-		$this->assertEquals($this->txtTemplatePrefix . "Foo\n==========\n\nhello *world*" . $this->txtTemplateSuffix, $response->getContent());
+		$this->assertEquals($this->txtTemplatePrefix . "Foo\n==========\n\nhello *world*, &c.\n" . $this->txtTemplateSuffix, $response->getContent());
 	}
 	public function testNoConverterFoundViewAction(){
 		$wsite = $this->getWikiSite();
