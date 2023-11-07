@@ -2,7 +2,7 @@ SPDX-License-Identifier: 0BSD
 
 BSD Zero Clause License
 
-Copyright (c) 2023 by Toby Mackenzie <public@tobymackenzie.com>
+Copyright (c) MMXXIII by Toby Mackenzie <public@tobymackenzie.com>
 
 Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted.
 
