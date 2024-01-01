@@ -133,6 +133,26 @@ class WikiSiteTest extends TestCase{
 		$response = $wsite->viewAction('/foo.html');
 		$this->assertEquals(302, $response->getStatusCode());
 	}
+	public function testRedirectScriptExtension(){
+		$wsite = $this->getWikiSite();
+		$wsite->getWiki()->writeFile(new File([
+			'content'=> 'hello world',
+			'path'=> '/foo.md',
+		]));
+		foreach([
+			'asp',
+			'cgi',
+			'js',
+			'jsp',
+			'php',
+			'pl',
+			'rb',
+		] as $ext){
+			$response = $wsite->viewAction('/foo.' . $ext);
+			$this->assertEquals(302, $response->getStatusCode(), 'Should redirect for extension ' . $ext);
+			$this->assertEquals('/foo', $response->getTargetUrl(), 'Should redirect to page base');
+		}
+	}
 	public function testRedirectTrailingSlash(){
 		$wsite = $this->getWikiSite();
 		$wsite->getWiki()->writeFile(new File([

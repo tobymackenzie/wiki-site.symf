@@ -78,7 +78,17 @@ class WikiSite{
 			}
 		}
 		if(isset($file)){
-			if($extension === 'html' || substr($path, -1) === '/'){
+			if(in_array($extension, [
+				'htm',
+				'html',
+				'asp',
+				'cgi',
+				'js',
+				'jsp',
+				'php',
+				'pl',
+				'rb',
+			]) || substr($path, -1) === '/'){
 				return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $pagePath]), 302);
 			//--force lowercase of extension if uppercase
 			}elseif(
