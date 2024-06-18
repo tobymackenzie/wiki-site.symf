@@ -47,6 +47,7 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 				}
 			}
 		}
+		$unclosedTagCount = 0;
 		foreach($explodedContent as $line){
 			//--start / stop codefence
 			if(substr($line, 0, 3) === '```'){
@@ -62,6 +63,7 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 				|| substr($line, 0, 1) === "\t"
 				|| (substr(trim($line), 0, 1) === '<' && substr(trim($line), -1) === '>')
 				|| substr(trim($line), 0, 4) === '<!--'
+				|| $unclosedTagCount > 0
 			){
 				$openCommentPos = strrpos($line, '<!--');
 				$closeCommentPos = strrpos($line, '-->');
@@ -70,12 +72,16 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 				}elseif($closeCommentPos !== false){
 					$isCommentOpened = false;
 				}
+				if(!$isCommentOpened && ($openMatchCount = preg_match_all(':<[\w][^>]*>:', $line)) && $openMatchCount > 0){
+					$unclosedTagCount += $openMatchCount;
+				}
+				if(!$isCommentOpened && $unclosedTagCount > 0 && ($closeMatchCount = preg_match_all(':</[\w][^>]*>:', $line)) && $closeMatchCount > 0){
+					$unclosedTagCount -= $closeMatchCount;
+				}
 				$multilineHtmlContent .= "{$line}\n";
 			}else{
 				if($multilineHtmlContent){
-					//--strip comments: opinionated
-					$multilineHtmlContent = preg_replace('/<!--.*-->/s', '', $multilineHtmlContent);
-					$content .= $this->htmlConverter->convert($multilineHtmlContent) . "\n";
+					$content .= $this->convertMultilineHTML($multilineHtmlContent) . "\n";
 					$multilineHtmlContent = '';
 				}
 				if($line){
@@ -85,14 +91,24 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 				}
 			}
 		}
+		if($multilineHtmlContent){
+			$content .= $this->convertMultilineHTML($multilineHtmlContent) . "\n";
+		}
 		return trim($content) . "\n";
+	}
+	protected function convertBit($bit){
+		//--convert
+		$bit = $this->htmlConverter->convert($bit);
+		//--fix ws for periods (stops)
+		$bit = preg_replace('/\. ([\w])/', '.  \1', $bit);
+		return $bit;
 	}
 	protected function convertMarkdownLine($line){
 		$newLine = '';
 		$inCodeFence = substr($line, 0, 1) === '`';
 		$context = $this;
 		$pregCallback = function($matches) use ($context){
-			return $context->htmlConverter->convert($matches[0]);
+			return $context->convertBit($matches[0]);
 		};
 		foreach(explode('`', $line) as $lineBit){
 			if($inCodeFence){
@@ -105,5 +121,19 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 			$inCodeFence = !$inCodeFence;
 		}
 		return $newLine;
+	}
+	protected function convertMultilineHTML($bit){
+		//--strip comments: opinionated
+		$out = trim(preg_replace('/<!--.*-->/s', '', $bit));
+		//--fix extra line breaks in pre-code blocks
+		$out = preg_replace(':[\s]*(<pre[^>]*>)[\s]*(<code[^>]*>)[\s]+:s', '\1\2', $out);
+		$out = preg_replace(':[\s]+(</code>)[\s]*(</pre>)[\s]*:s', '\1\2', $out);
+		//--convert
+		$out = "{$this->convertBit($out)}\n";
+		//--ensure if we are ending with paragraph that output keeps the paragraph
+		if(substr(trim($bit), -4, 4) === '</p>'){
+			$out .= "\n";
+		}
+		return $out;
 	}
 }

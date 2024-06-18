@@ -13,4 +13,7 @@ class CleanMarkdownTest extends TestCase{
 	public function testCleanMarkdown(){
 		$this->assertEquals(file_get_contents(__DIR__ . '/resources/clean.md'), (string) $this->getConverter()->convert(file_get_contents(__DIR__ . '/resources/markdown.md')));
 	}
+	public function testCleanMessyMarkdown(){
+		$this->assertEquals(file_get_contents(__DIR__ . '/resources/messy-cleaned.md'), (string) $this->getConverter()->convert(file_get_contents(__DIR__ . '/resources/messy.md')));
+	}
 }
