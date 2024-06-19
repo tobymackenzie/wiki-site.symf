@@ -14,7 +14,7 @@ We were then given a couple days to create some more.
 
 [![Image 5](/image5.jpg "Image 5")](/image5.jpg) Finally, I came up with a variant of the barn door idea with something inside.  A farmer would be standing with a pitch fork forking a large, squarish pile of hay.  The hay would hold the main content and the farmer would have the accordion side navigation on his back/side.  This version of the door had a cloth banner nailed across the inside top of the door with just the logo and title.  This one seemed very kiddy to me though, would probably only appeal to kids.
 
-```html
+``` html
 <!doctype html>
 <script>alert('hello');</script>
 <div>Hello world</div>

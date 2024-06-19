@@ -134,6 +134,8 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 		if(substr(trim($bit), -4, 4) === '</p>'){
 			$out .= "\n";
 		}
+		//--better formatting of code block language
+		$out = preg_replace('/^```([\w -]+)$/m', '``` \1', $out);
 		return $out;
 	}
 }
