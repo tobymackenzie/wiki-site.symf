@@ -22,6 +22,10 @@ We were then given a couple days to create some more.
 
 Paragraph after pre-code block.
 
+``` js
+alert('code block without line break before');
+```
+
 Test PHPLeague sanitize stuff isn't removed
 -----
 

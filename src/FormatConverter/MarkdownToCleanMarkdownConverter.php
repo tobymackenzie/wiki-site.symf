@@ -81,6 +81,9 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 				$multilineHtmlContent .= "{$line}\n";
 			}else{
 				if($multilineHtmlContent){
+					if($content && substr($content, -2) !== "\n\n"){
+						$content .= "\n";
+					}
 					$content .= $this->convertMultilineHTML($multilineHtmlContent);
 					$multilineHtmlContent = '';
 					if($line){
