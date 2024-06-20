@@ -72,10 +72,10 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 				}elseif($closeCommentPos !== false){
 					$isCommentOpened = false;
 				}
-				if(!$isCommentOpened && ($openMatchCount = preg_match_all(':<[\w][^>]*>:', $line)) && $openMatchCount > 0){
+				if(!$isCommentOpened && ($openMatchCount = preg_match_all(':<[\w][^/>]*>:', $line)) && $openMatchCount > 0){
 					$unclosedTagCount += $openMatchCount;
 				}
-				if(!$isCommentOpened && $unclosedTagCount > 0 && ($closeMatchCount = preg_match_all(':</[\w][^>]*>:', $line)) && $closeMatchCount > 0){
+				if(!$isCommentOpened && $unclosedTagCount > 0 && ($closeMatchCount = preg_match_all(':</[\w][^/>]*>:', $line)) && $closeMatchCount > 0){
 					$unclosedTagCount -= $closeMatchCount;
 				}
 				$multilineHtmlContent .= "{$line}\n";
