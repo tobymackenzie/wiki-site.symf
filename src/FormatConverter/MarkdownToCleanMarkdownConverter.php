@@ -128,11 +128,15 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 	protected function convertMultilineHTML($bit){
 		//--strip comments: opinionated
 		$out = trim(preg_replace('/<!--.*-->/s', '', $bit));
+		//--phpleague stripping doctype even in code blocks: store as a something else so converter doesn't see
+		$out = preg_replace(':&lt;\!DOCTYPE:', '&lt;!@@@DOCTYPE', $out);
 		//--fix extra line breaks in pre-code blocks
 		$out = preg_replace(':[\s]*(<pre[^>]*>)[\s]*(<code[^>]*>)[\s]+:s', '\1\2', $out);
 		$out = preg_replace(':[\s]+(</code>)[\s]*(</pre>)[\s]*:s', '\1\2', $out);
 		//--convert
 		$out = "{$this->convertBit($out)}\n";
+		//--restore doctype from above change
+		$out = str_replace('<!@@@DOCTYPE', '<!DOCTYPE', $out);
 		//--ensure if we are ending with paragraph that output keeps the paragraph
 		if(substr(trim($bit), -4, 4) === '</p>'){
 			$out .= "\n";

@@ -25,3 +25,26 @@ We were then given a couple days to create some more.
 &lt;script&gt;alert('hello');&lt;/script&gt;
 &lt;div&gt;Hello world&lt;/div&gt;
 </code></pre>
+
+Paragraph after pre-code block.
+
+Test PHPLeague sanitize stuff isn't removed
+-----
+
+<pre><code class="language-html">
+&lt;?xml encoding="UTF-8"&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;body&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+``` html
+<?xml encoding="UTF-8">
+<!DOCTYPE html>
+<html>
+<body>
+</body>
+</html>
+```
