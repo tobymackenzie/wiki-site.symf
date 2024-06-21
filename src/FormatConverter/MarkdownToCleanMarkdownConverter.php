@@ -57,7 +57,6 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 			}elseif($inCodeFence || substr($line, 0, 4) === '    '){
 				$content .= "{$line}\n";
 			//--if full HTML line, stick in var to be converted all at once
-			//-! naive, can we do better?
 			}elseif(
 				$isCommentOpened
 				|| substr($line, 0, 1) === "\t"
@@ -100,6 +99,35 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 		if($multilineHtmlContent){
 			$content .= $this->convertMultilineHTML($multilineHtmlContent) . "\n";
 		}
+
+		$content = trim($content);
+
+		//--fix some things in final output. must handle code fences differently
+		$inCodeFence = substr($content, 0, 3) === '```';
+		$tmp = [];
+		foreach(explode('```', $content) as $part){
+			if($inCodeFence){
+				$inCodeFence = false;
+			}else{
+				$tmp2 = [];
+				$inCodeSpan = substr($content, 0, 3) === '`';
+				foreach(explode('`', $part) as $subpart){
+					if($inCodeSpan){
+						$inCodeSpan = false;
+					}else{
+						//--fix extra line breaks
+						$subpart = preg_replace(":\n[\n]+\n:", "\n\n", $subpart);
+						$inCodeSpan = true;
+					}
+					$tmp2[] = $subpart;
+				}
+				$part = implode('`', $tmp2);
+				$inCodeFence = true;
+			}
+			$tmp[] = $part;
+		}
+		$content = implode('```', $tmp);
+
 		return trim($content) . "\n";
 	}
 	protected function convertBit($bit){

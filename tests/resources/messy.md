@@ -1,6 +1,7 @@
 After making our layout wireframes, we brainstormed some various thematic ideas.  We mostly thought of items that'd be on a farm.  Some of the ideas that were popular were: wood grain, hanging signs, the historical sign, barn, sun, etchings, grass, farm animals, silo, straw hat, pitch fork, seasonal changes, red, brown, and trees.  It was a brainstorm, so there were many other ideas, although some were less applicable.
 
 In class, we each drew up one or a few quick thematic wireframes.  We didn't have much time, so many weren't fleshed out.  I drew three:
+<!--more-->
 
 <p>
 <a href="/image1.jpg"><img src="/image1.jpg" alt="Image 1" title="Image 1" class="alignright" /></a> These two were based mainly on the historic mark sign that the farm has.  The first had many little signs for top buttons and logo, two big signs for a sidebar and main content area, and then a grassy ground below that serves as a footer.  The page background would be a blue sky.  I felt this might be a little overboard with the signs, but liked the grassy footer and blue sky a lot, using them in most of my designs.  The next drawing kept the footer and had one sign as a sidebar with the logo and accordion navigation.  I included the wagon wheel that is at the base of the Stearn's sign.  I felt a light red barn side or white slatted house side would work for the main content area.

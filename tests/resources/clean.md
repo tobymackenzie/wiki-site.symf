@@ -11,11 +11,7 @@ Like, hello *world*, &c.
 
 This is going to stay.
 
-
-
 In between
-
-
 
 Heading 2
 --------
