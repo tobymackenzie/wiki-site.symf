@@ -17,7 +17,7 @@ We were then given a couple days to create some more.
 ``` html
 <!doctype html>
 <script>alert('hello');</script>
-<div>Hello world</div>
+<div>Hello world &amp; universe</div>
 ```
 
 Paragraph after pre-code block.
@@ -25,6 +25,10 @@ Paragraph after pre-code block.
 ``` js
 alert('code block without line break before');
 ```
+
+Paragraph with inline code markdown `<div>hello &amp; goodbye</div>` to test.  I must also say &c.
+
+Paragraph with inline code tag `<div>hello &amp; goodbye</div>` to test.  I must also say &c.
 
 Test PHPLeague sanitize stuff isn't removed
 -----

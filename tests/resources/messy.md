@@ -24,11 +24,15 @@ We were then given a couple days to create some more.
 <pre><code class="language-html">
 &lt;!doctype html&gt;
 &lt;script&gt;alert('hello');&lt;/script&gt;
-&lt;div&gt;Hello world&lt;/div&gt;
+&lt;div&gt;Hello world &amp;amp; universe&lt;/div&gt;
 </code></pre>
 
 Paragraph after pre-code block.
 <pre><code class="language-js">alert('code block without line break before');</code></pre>
+
+Paragraph with inline code markdown `<div>hello &amp; goodbye</div>` to test.  I must also say &c.
+
+Paragraph with inline code tag <code>&lt;div&gt;hello &amp;amp; goodbye&lt;/div&gt;</code> to test.  I must also say &c.
 
 Test PHPLeague sanitize stuff isn't removed
 -----

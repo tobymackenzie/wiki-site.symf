@@ -115,6 +115,8 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 					if($inCodeSpan){
 						$inCodeSpan = false;
 					}else{
+						//--fix `&amp;` that are erroneously converted the wrong way
+						$subpart = str_replace('&amp;', '&', $subpart);
 						//--fix extra line breaks
 						$subpart = preg_replace(":\n[\n]+\n:", "\n\n", $subpart);
 						$inCodeSpan = true;
