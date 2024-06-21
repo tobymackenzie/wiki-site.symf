@@ -11,10 +11,18 @@ Like `HtmlConverter`, but easier reading / more correct:
 */
 class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 	protected $htmlConverter;
-	public function __construct(HtmlConverter $htmlConverter = null){
+	protected bool $stripComments = true;
+	public function __construct(HtmlConverter $htmlConverter = null, $opts = []){
+		if(!is_array($opts)){
+			$opts = ['stripComments'=> $opts];
+		}
+		foreach($opts as $key=> $value){
+			$this->$key = $value;
+		}
 		$this->htmlConverter = $htmlConverter ?? new HtmlConverter([
 			'hard_break'=> true,
 			'strip_tags'=> true,
+			'strip_comments'=> $this->stripComments,
 		]);
 	}
 	public function supports(string $from, string $to){
@@ -60,7 +68,7 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 			}elseif(
 				$isCommentOpened
 				|| substr($line, 0, 1) === "\t"
-				|| (substr(trim($line), 0, 1) === '<' && substr(trim($line), -1) === '>')
+				|| (substr(trim($line), 0, 1) === '<' && strpos($line, '>') !== false)
 				|| substr(trim($line), 0, 4) === '<!--'
 				|| $unclosedTagCount > 0
 			){
@@ -71,23 +79,26 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 				}elseif($closeCommentPos !== false){
 					$isCommentOpened = false;
 				}
+				$thisTagCount = 0;
 				if(!$isCommentOpened && ($openMatchCount = preg_match_all(':<[\w][^/>]*>:', $line)) && $openMatchCount > 0){
-					$unclosedTagCount += $openMatchCount;
+					$thisTagCount += $openMatchCount;
 				}
-				if(!$isCommentOpened && $unclosedTagCount > 0 && ($closeMatchCount = preg_match_all(':</[\w][^/>]*>:', $line)) && $closeMatchCount > 0){
-					$unclosedTagCount -= $closeMatchCount;
+				if(!$isCommentOpened && ($unclosedTagCount > 0 || $thisTagCount > 0) && ($closeMatchCount = preg_match_all(':</[\w][^/>]*>:', $line)) && $closeMatchCount > 0){
+					$thisTagCount -= $closeMatchCount;
 				}
+				$unclosedTagCount += $thisTagCount;
 				$multilineHtmlContent .= "{$line}\n";
 			}else{
 				if($multilineHtmlContent){
 					if($content && substr($content, -2) !== "\n\n"){
 						$content .= "\n";
 					}
-					$content .= $this->convertMultilineHTML($multilineHtmlContent);
-					$multilineHtmlContent = '';
-					if($line){
+					$converted = $this->convertMultilineHTML($multilineHtmlContent);
+					$content .= $converted;
+					if($line && trim($converted)){
 						$content .= "\n";
 					}
+					$multilineHtmlContent = '';
 				}
 				if($line){
 					$content .= $this->convertMarkdownLine($line) . "\n";
@@ -133,10 +144,15 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 		return trim($content) . "\n";
 	}
 	protected function convertBit($bit){
-		//--convert
-		$bit = $this->htmlConverter->convert($bit);
-		//--fix ws for periods (stops)
-		$bit = preg_replace('/\. ([\w])/', '.  \1', $bit);
+		//-# string that is only a comment throws errors, skip if so
+		if(!preg_match(':^[\s]*<\!--.*-->[\s]*$:s', $bit)){
+			//--convert
+			$bit = $this->htmlConverter->convert($bit);
+			//--fix ws for periods (stops)
+			$bit = preg_replace('/\. ([\w])/', '.  \1', $bit);
+		}elseif($this->stripComments){
+			$bit = '';
+		}
 		return $bit;
 	}
 	protected function convertMarkdownLine($line){
@@ -159,8 +175,7 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 		return $newLine;
 	}
 	protected function convertMultilineHTML($bit){
-		//--strip comments: opinionated
-		$out = trim(preg_replace('/<!--.*-->/s', '', $bit));
+		$out = $bit;
 		//--phpleague stripping doctype even in code blocks: store as a something else so converter doesn't see
 		$out = preg_replace(':&lt;\!DOCTYPE:', '&lt;!@@@DOCTYPE', $out);
 		//--fix extra line breaks in pre-code blocks
