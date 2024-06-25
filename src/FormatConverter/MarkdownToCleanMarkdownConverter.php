@@ -22,7 +22,7 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 		$this->htmlConverter = $htmlConverter ?? new HtmlConverter([
 			'hard_break'=> true,
 			'strip_tags'=> true,
-			'strip_comments'=> $this->stripComments,
+			'preserve_comments'=> !$this->stripComments,
 		]);
 	}
 	public function supports(string $from, string $to){
