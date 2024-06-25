@@ -32,7 +32,7 @@ Paragraph after pre-code block.
 
 Paragraph with inline code markdown `<div>hello &amp; goodbye</div>` to test.  I must also say &c.
 
-Paragraph with inline code tag <code>&lt;div&gt;hello &amp;amp; goodbye&lt;/div&gt;</code> to test.  I must also say &c.
+Paragraph with inline code tag <code>&lt;div&gt;hello &amp;amp; goodbye&lt;/div&gt;</code> to test.  I must also say &c.  
 
 Test PHPLeague sanitize stuff isn't removed
 -----

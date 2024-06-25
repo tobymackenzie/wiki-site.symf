@@ -131,6 +131,8 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 						//--fix extra line breaks
 						$subpart = preg_replace(":\n[\n]+\n:", "\n\n", $subpart);
 						$inCodeSpan = true;
+						//--fix extra trailing double spaces inserted in some cases
+						$subpart = str_replace("  \n\n", "\n\n", $subpart);
 					}
 					$tmp2[] = $subpart;
 				}
