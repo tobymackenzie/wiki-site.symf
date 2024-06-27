@@ -62,7 +62,7 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 				$content .= "{$line}\n";
 				$inCodeFence = !$inCodeFence;
 			//--output codefence lines directly
-			}elseif($inCodeFence || substr($line, 0, 4) === '    '){
+			}elseif($inCodeFence || substr(trim($line), 0, 4) === '    '){
 				$content .= "{$line}\n";
 			//--if full HTML line, stick in var to be converted all at once
 			}elseif(
