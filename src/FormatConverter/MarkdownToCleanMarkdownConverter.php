@@ -1,5 +1,6 @@
 <?php
 namespace TJM\WikiSite\FormatConverter;
+use Exception;
 use League\HTMLToMarkdown\HtmlConverter;
 
 /*
@@ -108,7 +109,7 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 			}
 		}
 		if($multilineHtmlContent){
-			$content .= $this->convertMultilineHTML($multilineHtmlContent) . "\n";
+			throw new Exception("MarkdownToCleanMarkdownConverter: Something went wrong, still have unconverted content: {$multilineHtmlContent}");
 		}
 
 		$content = trim($content);
