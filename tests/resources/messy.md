@@ -54,3 +54,20 @@ Test PHPLeague sanitize stuff isn't removed
 </body>
 </html>
 ```
+
+Lists
+-----
+
+- move gzip file and install into folder
+	```
+	mv awstats-6.9.tar.gz awstats
+	mv install awstats
+	```
+- move into awstats
+	```
+	cd awstats
+	```
+- make configuration and data dirs
+	```
+	mkdir conf data
+	```

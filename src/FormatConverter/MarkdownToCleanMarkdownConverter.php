@@ -58,7 +58,7 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 		$unclosedTagCount = 0;
 		foreach($explodedContent as $line){
 			//--start / stop codefence
-			if(substr($line, 0, 3) === '```'){
+			if(substr(trim($line), 0, 3) === '```'){
 				$content .= "{$line}\n";
 				$inCodeFence = !$inCodeFence;
 			//--output codefence lines directly
