@@ -38,6 +38,7 @@ Test PHPLeague sanitize stuff isn't removed
 <!DOCTYPE html>
 <html>
 <body>
+<!--comment-->
 </body>
 </html>
 ```
@@ -47,6 +48,7 @@ Test PHPLeague sanitize stuff isn't removed
 <!DOCTYPE html>
 <html>
 <body>
+<!--comment-->
 </body>
 </html>
 ```

@@ -42,6 +42,7 @@ Test PHPLeague sanitize stuff isn't removed
 &lt;!DOCTYPE html&gt;
 &lt;html&gt;
 &lt;body&gt;
+&lt;!--comment--&gt;
 &lt;/body&gt;
 &lt;/html&gt;
 </code></pre>
@@ -51,6 +52,7 @@ Test PHPLeague sanitize stuff isn't removed
 <!DOCTYPE html>
 <html>
 <body>
+<!--comment-->
 </body>
 </html>
 ```
