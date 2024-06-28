@@ -138,6 +138,10 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 						$inCodeSpan = true;
 						//--fix extra trailing double spaces inserted in some cases
 						$subpart = str_replace("  \n\n", "\n\n", $subpart);
+						if(!$this->stripComments){
+							//--fix extra slashes being added to comments
+							$subpart = str_replace('\<', '<', $subpart);
+						}
 					}
 					$tmp2[] = $subpart;
 				}
@@ -151,16 +155,65 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 		return trim($content) . "\n";
 	}
 	protected function convertBit($bit){
-		//-# string that is only a comment throws errors, skip if so
-		if(!preg_match(':^[\s]*<\!--.*-->[\s]*$:s', $bit)){
-			//--convert
-			$bit = $this->htmlConverter->convert($bit);
-			//--fix ws for periods (stops)
-			$bit = preg_replace('/\. ([\w])/', '.  \1', $bit);
-		}elseif($this->stripComments){
-			$bit = '';
+		$commentOnlyRegex = ':^[\s]*<\!--.*?-->[\s]*$:s';
+		//--convert
+		try{
+			if($this->stripComments){
+				//-# string that is only a comment throws errors, skip if so
+				if(!(preg_match($commentOnlyRegex, $bit) && substr_count($bit, '-->') === 1)){
+					$result = $this->htmlConverter->convert($bit);
+				}else{
+					return '';
+				}
+			}elseif(isset($bit)){
+				$result = [];
+				$tmp = [];
+				$inComment = false;
+				$bits = explode("\n", rtrim($bit));
+				$bits[] = null;
+				$appendLine = $handleTmp = false;
+				foreach($bits as $line){
+					//--last line
+					if($line === null){
+						$appendLine = false;
+						$handleTmp = true;
+					}elseif($inComment){
+						$handleTmp = true;
+						$appendLine = true;
+						//-! naive
+						if(substr_count($line, '-->') > 0){
+							$inComment = false;
+						}
+					}elseif(preg_match($commentOnlyRegex, $line) && substr_count($line, '-->') === 1){
+						$appendLine = true;
+						$handleTmp = true;
+					}elseif(preg_match(':^[\s]*<\!--:', $line) && substr_count($line, '-->') === 0){
+						$appendLine = true;
+						$handleTmp = true;
+						$inComment = true;
+					}else{
+						$appendLine = false;
+						$handleTmp = false;
+						$tmp[] = $line;
+					}
+					if($handleTmp && $tmp){
+						$result[] = $this->htmlConverter->convert(implode("\n", $tmp));
+						$tmp = [];
+					}
+					if($appendLine){
+						$result[] = $line;
+					}
+					
+				}
+				$result = implode("\n", $result);
+			}else{
+				return '';
+			}
+		}catch(Exception $e){
+			dump($e, $bit);
+			throw $e;
 		}
-		return $bit;
+		return $result;
 	}
 	protected function convertMarkdownLine($line){
 		$newLine = '';
@@ -188,6 +241,11 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 		//--fix extra line breaks in pre-code blocks
 		$out = preg_replace(':[\s]*(<pre[^>]*>)[\s]*(<code[^>]*>)[\s]+:s', '\1\2', $out);
 		$out = preg_replace(':[\s]+(</code>)[\s]*(</pre>)[\s]*:s', '\1\2', $out);
+		//--fix comments for conversion
+		if(!$this->stripComments && isset($out)){
+			$out = preg_replace(":--><(h|p):", "-->\n\n<$1", $out);
+			$out = preg_replace(":/(h[1-6]|p)>(<\!--):", "/$1>\n\n$2", $out);
+		}
 		//--convert
 		$out = "{$this->convertBit($out)}\n";
 		//--restore doctype from above change

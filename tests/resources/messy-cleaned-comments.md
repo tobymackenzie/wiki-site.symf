@@ -32,6 +32,8 @@ Paragraph with inline code markdown `<div>hello &amp; goodbye</div>` to test.  I
 
 Paragraph with inline code tag `<div>hello &amp; goodbye</div>` to test.  I must also say &c.
 
+<!--foo-->
+
 Test PHPLeague sanitize stuff isn't removed
 -----
 
@@ -71,3 +73,17 @@ Lists
 	```
 	mkdir conf data
 	```
+
+Another paragraph line.
+
+<!--foo-->
+A html title
+------------
+<!--foo-->
+
+Another paragraph line.
+
+<!--foo-->
+### Another title
+<!--foo-->
+This line has a comment inside<!--foo-->.

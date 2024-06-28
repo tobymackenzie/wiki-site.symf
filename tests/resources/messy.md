@@ -33,7 +33,7 @@ Paragraph after pre-code block.
 Paragraph with inline code markdown `<div>hello &amp; goodbye</div>` to test.  I must also say &c.
 
 Paragraph with inline code tag <code>&lt;div&gt;hello &amp;amp; goodbye&lt;/div&gt;</code> to test.  I must also say &c.  
-
+<!--foo-->
 Test PHPLeague sanitize stuff isn't removed
 -----
 
@@ -73,3 +73,11 @@ Lists
 	```
 	mkdir conf data
 	```
+
+Another paragraph line.
+<!--foo-->
+<h2>A html title</h2>
+<!--foo-->
+Another paragraph line.
+
+<!--foo--><h3>Another title</h3><!--foo--><p>This line has a <ins class="foo">comment</ins> inside<!--foo-->.</p>
