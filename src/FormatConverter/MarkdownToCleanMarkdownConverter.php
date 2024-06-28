@@ -213,6 +213,8 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 			dump($e, $bit);
 			throw $e;
 		}
+		//--fix ws for periods (stops)
+		$result = preg_replace('/\. ([\w])/', '.  $1', $result);
 		return $result;
 	}
 	protected function convertMarkdownLine($line){
