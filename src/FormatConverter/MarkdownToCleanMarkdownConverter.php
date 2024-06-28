@@ -68,7 +68,6 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 			//--if full HTML line, stick in var to be converted all at once
 			}elseif(
 				$isCommentOpened
-				|| substr($line, 0, 1) === "\t"
 				|| (substr(trim($line), 0, 1) === '<' && strpos($line, '>') !== false)
 				|| substr(trim($line), 0, 4) === '<!--'
 				|| $unclosedTagCount > 0

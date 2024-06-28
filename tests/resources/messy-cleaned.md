@@ -65,6 +65,9 @@ Lists
 	```
 	cd awstats
 	```
+- fix permissions
+	- server and administrator both need access
+	- server needs write/read to data, everything else can be read
 - make configuration and data dirs
 	```
 	mkdir conf data
