@@ -112,7 +112,12 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 			}
 		}
 		if($multilineHtmlContent){
-			throw new Exception("MarkdownToCleanMarkdownConverter: Something went wrong, still have unconverted content: {$multilineHtmlContent}");
+			if($content && substr($content, -2) !== "\n\n"){
+				$content .= "\n";
+			}
+			$content .= $this->convertMultilineHTML($multilineHtmlContent);
+			//-! might need to rework loop above to always output multiline when we are outputting something else, see boolean setup of `convertBit()` for how to deal with this.
+			trigger_error('Multiline content output after end up loop implies we have fewer end html tags than start.  Might be output at wrong place, check output.');
 		}
 
 		$content = trim($content);
