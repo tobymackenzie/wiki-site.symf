@@ -1,6 +1,7 @@
 <?php
 namespace TJM\WikiSite\Tests;
 use Exception;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use TJM\Wiki\File;
@@ -30,15 +31,24 @@ class WikiSiteTest extends TestCase{
 			]
 		);
 	}
-
-	public function testNotFoundViewAction(){
+	static public function getNotFoundViewData(){
+		return [
+			['/'],
+			['/bar'],
+			['/fo'],
+			['/foobar'],
+			['/*'],
+		];
+	}
+	#[DataProvider('getNotFoundViewData')]
+	public function testNotFoundViewAction($path){
 		$wsite = $this->getWikiSite();
 		$wsite->getWiki()->writeFile(new File([
 			'content'=> 'hello world',
 			'path'=> '/foo.md',
 		]));
 		$this->expectException(NotFoundHttpException::class);
-		$wsite->viewAction('/bar');
+		$wsite->viewAction($path);
 	}
 	public function testFoundViewAction(){
 		$wsite = $this->getWikiSite();
