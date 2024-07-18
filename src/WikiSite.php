@@ -222,6 +222,14 @@ class WikiSite{
 	/*=====
 	==routing
 	=====*/
+	public function getPagePaths(){
+		$paths = $this->wiki->getPagePaths();
+		$index = array_search($this->homePage, $paths);
+		if($index !== false){
+			$paths[$index] = '/';
+		}
+		return $paths;
+	}
 	//-! maybe we should just move actions to a regular controller so we don't need this
 	protected function getRoute($name, $opts, $abs = UrlGeneratorInterface::ABSOLUTE_PATH){
 		if($this->router){

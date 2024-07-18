@@ -71,6 +71,20 @@ class WikiSiteTest extends TestCase{
 		$this->assertEquals(200, $response->getStatusCode());
 		$this->assertEquals($this->mdTemplatePrefix . "Foo\n==========\n\nhello *world*. `<span>`, &c.\n", $response->getContent());
 	}
+	public function testGetPagePaths(){
+		$wsite = new WikiSite(
+			new Wiki([
+				'path'=> __DIR__ . '/resources/www',
+			])
+		);
+		$paths = $wsite->getPagePaths();
+		$expect = [
+			'/',
+			'/dir',
+			'/dir/foo',
+		];
+		$this->assertSame(array_diff($expect, $paths), array_diff($paths, $expect));
+	}
 	public function testInsertHeadingViewAction(){
 		$wsite = $this->getWikiSite();
 		$wsite->getWiki()->writeFile(new File([
