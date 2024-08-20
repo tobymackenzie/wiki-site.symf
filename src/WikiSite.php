@@ -14,6 +14,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use TJM\Wiki\Wiki;
 use TJM\Wiki\File;
 use TJM\WikiSite\FormatConverter\ConverterInterface;
+use TJM\WikiSite\Event\ViewContentEvent;
 use TJM\WikiSite\Event\ViewDataEvent;
 use Twig\Environment as Twig_Environment;
 
@@ -161,6 +162,11 @@ class WikiSite{
 				$content = $this->twig->render($viewTemplate, $data);
 			}elseif($isHtmlish){
 				$content = "<!doctype html><title>{$name} - {$this->name}</title>{$content}";
+			}
+			if($this->getEventDispatcher()){
+				$event = new ViewContentEvent($content, $path);
+				$this->getEventDispatcher()->dispatch($event);
+				$content = $event->getContent();
 			}
 			$response->setContent($content);
 			$response->headers->set('Content-Type', $this->getMimeType($extension));
