@@ -40,6 +40,9 @@ class WikiSiteTest extends TestCase{
 			['/*'],
 		];
 	}
+	/**
+	 * @dataProvider getNotFoundViewData
+	 */
 	#[DataProvider('getNotFoundViewData')]
 	public function testNotFoundViewAction($path){
 		$wsite = $this->getWikiSite();
