@@ -20,7 +20,7 @@ class WikiSiteTest extends TestCase{
 	protected function getWikiSite(){
 		return new WikiSite(
 			new Wiki([
-				'path'=> self::WIKI_DIR,
+				'path'=> self::$WIKI_DIR,
 			])
 			,[
 				'converters'=> [
