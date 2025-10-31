@@ -24,21 +24,15 @@
 		"php": ">=7.4"
 		,"league/commonmark": "^2"
 		,"league/html-to-markdown": "^5"
-		,"symfony/asset": "^5.4"
-		,"symfony/framework-bundle": "^5.4"
-		,"symfony/mime": "^5.4"
-		,"symfony/twig-bundle": "^5.4"
-		,"symfony/yaml": "^5.4"
+		,"symfony/asset": "^5.4|^6.4"
+		,"symfony/framework-bundle": "^5.4|^6.4"
+		,"symfony/mime": "^5.4|^6.4"
+		,"symfony/twig-bundle": "^5.4|^6.4"
+		,"symfony/yaml": "^5.4|^6.4"
 		,"tjm/wiki": "~0.1"
 	}
 	,"require-dev": {
-		"symfony/browser-kit": "^5.4"
+		"symfony/browser-kit": "^5.4|^6.4"
 		,"tjm/dev": "*"
-	}
-	,"config": {
-		"_notes": "force PHP 7.4 because of some incompatibility within Symfony, problem with SessionListener::onFinishRequest()",
-		"platform": {
-			"php": "7.4"
-		}
 	}
 }
