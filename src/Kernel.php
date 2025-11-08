@@ -65,7 +65,7 @@ class Kernel extends Base{
 		}
 		return $this->projectDir;
 	}
-	public function run(Request $request = null){
+	public function run(?Request $request = null){
 		if(empty($request)){
 			if(php_sapi_name() === 'cli'){
 				//--for dev, use argument as path

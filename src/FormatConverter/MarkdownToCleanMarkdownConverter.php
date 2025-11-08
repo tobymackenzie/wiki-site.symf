@@ -13,7 +13,7 @@ Like `HtmlConverter`, but easier reading / more correct:
 class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 	protected $htmlConverter;
 	protected bool $stripComments = true;
-	public function __construct(HtmlConverter $htmlConverter = null, $opts = []){
+	public function __construct(?HtmlConverter $htmlConverter = null, $opts = []){
 		if(!is_array($opts)){
 			$opts = ['stripComments'=> $opts];
 		}
@@ -29,7 +29,7 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 	public function supports(string $from, string $to){
 		return strtolower($from) === 'md' && in_array(strtolower($to), ['md', 'txt']);
 	}
-	public function convert(string $content, string $from = null, string $to = null){
+	public function convert(string $content, ?string $from = null, ?string $to = null){
 		$explodedContent = explode("\n", trim($content));
 		$content
 			= $multilineHtmlContent

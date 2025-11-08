@@ -9,5 +9,5 @@ interface ConverterInterface{
 		$to: format extension to convert to
 	*/
 	public function supports(string $from, string $to);
-	public function convert(string $content, string $from = null, string $to = null);
+	public function convert(string $content, ?string $from = null, ?string $to = null);
 }

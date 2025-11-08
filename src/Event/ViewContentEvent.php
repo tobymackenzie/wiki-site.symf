@@ -5,7 +5,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 class ViewContentEvent extends Event{
 	protected string $content;
 	protected ?string $path;
-	public function __construct(string $content, string $path = null){
+	public function __construct(string $content, ?string $path = null){
 		$this->content = $content;
 		$this->path = $path;
 	}
