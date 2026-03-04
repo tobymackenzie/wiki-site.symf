@@ -71,6 +71,22 @@ class WikiSite{
 		if(substr($pagePath, -1) === '/'){
 			$pagePath = substr($pagePath, 0, -1);
 		}
+		if($extension){
+			$canonical = $this->wiki->getCanonicalPath($path);
+		}
+		if(empty($canonical)){
+			$canonical = $this->wiki->getCanonicalPath($pagePath);
+			if($extension){
+				if($this->canConvertFile($this->wiki->getPage($canonical), $extension)){
+					$canonical = $canonical . '.' . strtolower($extension);
+				}else{
+					$canonical = null;
+				}
+			}
+		}
+		if($canonical && $canonical !== $path && $canonical !== $pagePath){
+			return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $canonical]), 302);
+		}
 		if($this->wiki->hasPage($pagePath)){
 			$file = $this->wiki->getPage($pagePath);
 		}else{
@@ -171,22 +187,6 @@ class WikiSite{
 			$response->setContent($content);
 			$response->headers->set('Content-Type', $this->getMimeType($extension));
 			return $response;
-		}
-		if($extension){
-			$canonical = $this->wiki->getCanonicalPath($path);
-		}
-		if(empty($canonical)){
-			$canonical = $this->wiki->getCanonicalPath($pagePath);
-			if($extension){
-				if($this->canConvertFile($this->wiki->getPage($canonical), $extension)){
-					$canonical = $canonical . '.' . strtolower($extension);
-				}else{
-					$canonical = null;
-				}
-			}
-		}
-		if($canonical){
-			return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $canonical]), 302);
 		}
 		throw new NotFoundHttpException();
 	}
