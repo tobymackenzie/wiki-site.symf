@@ -13,6 +13,7 @@ use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use TJM\Wiki\Wiki;
 use TJM\Wiki\File;
+use TJM\WikiSite\Data\ViewActionData;
 use TJM\WikiSite\FormatConverter\ConverterInterface;
 use TJM\WikiSite\Event\ViewContentEvent;
 use TJM\WikiSite\Event\ViewDataEvent;
@@ -57,45 +58,35 @@ class WikiSite{
 	==controller
 	=====*/
 	public function viewAction($path){
-		if(substr($path, 0, 1) !== '/'){
-			$path = '/' . $path;
+		$adat = new ViewActionData($path, $this->homePage);
+		if($adat->canonical){
+			return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $adat->canonical]), 302);
 		}
-		if($path === $this->homePage){
-			return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> '/']), 302);
+		if($adat->extension){
+			$adat->setCanonical($this->wiki->getCanonicalPath($adat->path));
 		}
-		if($path === '/'){
-			$path = $this->homePage;
-		}
-		$extension = pathinfo($path, PATHINFO_EXTENSION);
-		$pagePath = $extension ? substr($path, 0, -1 * (strlen($extension) + 1)) : $path;
-		if(substr($pagePath, -1) === '/'){
-			$pagePath = substr($pagePath, 0, -1);
-		}
-		if($extension){
-			$canonical = $this->wiki->getCanonicalPath($path);
-		}
-		if(empty($canonical)){
-			$canonical = $this->wiki->getCanonicalPath($pagePath);
-			if($extension){
-				if($this->canConvertFile($this->wiki->getPage($canonical), $extension)){
-					$canonical = $canonical . '.' . strtolower($extension);
+		if(empty($adat->canonical)){
+			$adat->setCanonical($this->wiki->getCanonicalPath($adat->pagePath));
+			if($adat->extension){
+				if($this->canConvertFile($this->wiki->getPage($adat->canonical), $adat->extension)){
+					$adat->setCanonical($adat->canonical . '.' . strtolower($adat->extension));
 				}else{
-					$canonical = null;
+					$adat->setCanonical(null);
 				}
 			}
 		}
-		if($canonical && $canonical !== $path && $canonical !== $pagePath){
-			return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $canonical]), 302);
+		if($adat->canonical && $adat->canonical !== $adat->path && $adat->canonical !== $adat->pagePath){
+			return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $adat->canonical]), 302);
 		}
-		if($this->wiki->hasPage($pagePath)){
-			$file = $this->wiki->getPage($pagePath);
+		if($this->wiki->hasPage($adat->pagePath)){
+			$adat->setFile($this->wiki->getPage($adat->pagePath));
 		}else{
-			if($this->wiki->hasFile($path)){
-				$file = $this->wiki->getFile($path);
+			if($this->wiki->hasFile($adat->path)){
+				$adat->setFile($this->wiki->getFile($adat->path));
 			}
 		}
-		if(isset($file)){
-			if(in_array($extension, [
+		if($adat->file){
+			if(in_array($adat->extension, [
 				'htm',
 				'html',
 				'asp',
@@ -105,88 +96,84 @@ class WikiSite{
 				'php',
 				'pl',
 				'rb',
-			]) || substr($path, -1) === '/'){
-				return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $pagePath]), 302);
+			]) || substr($adat->path, -1) === '/'){
+				return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $adat->pagePath]), 302);
 			//--force lowercase of extension if uppercase
 			}elseif(
-				$extension && $extension !== strtolower($extension)
+				$adat->extension && $adat->extension !== strtolower($adat->extension)
 				&& (
-					strtolower($extension) === strtolower($file->getExtension())
-					|| $this->canConvertFile($file, $extension)
+					strtolower($adat->extension) === strtolower($adat->file->getExtension())
+					|| $this->canConvertFile($adat->file, $adat->extension)
 				)
 			){
-				$path = explode('.', $path, -1);
-				$path = implode('.', $path) . '.' . strtolower($extension);
-				return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $path]), 302);
+				$adat->setPath(explode('.', $adat->path, -1));
+				$adat->setPath(implode('.', $adat->path) . '.' . strtolower($adat->extension));
+				return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $adat->path]), 302);
 			}
-			$response = new Response();
-			if(empty($extension)){
-				$extension = 'html';
+			if(empty($adat->extension)){
+				$adat->setExtension('html');
 			}
-			if($this->canConvertFile($file, $extension)){
-				$content = $this->convertFile($file, $extension);
-			}elseif($extension === $file->getExtension()){
-				$content = $file->getContent();
+			if($this->canConvertFile($adat->file, $adat->extension)){
+				$adat->setContent($this->convertFile($adat->file, $adat->extension));
+			}elseif($adat->extension === $adat->file->getExtension()){
+				$adat->setContent($adat->file->getContent());
 			}else{
 				throw new NotFoundHttpException();
 			}
-			$isHtmlish = $extension === 'html' || $extension === 'xhtml';
-			$isTextish = $extension === 'md' || $extension === 'txt';
-			$viewTemplate = $this->getTemplateForExtension($this->viewTemplate, $extension);
-			if($viewTemplate || $isHtmlish || $isTextish){
+			$isHtmlish = $adat->isHtmlish();
+			$isTextish = $adat->isTextish();
+			$adat->setViewTemplate($this->getTemplateForExtension($this->viewTemplate, $adat->extension));
+			if($adat->viewTemplate || $isHtmlish || $isTextish){
 				if(
-					($isHtmlish && preg_match(':<h1.*>(.*)</h1>:i', $content, $matches))
-					|| ($isTextish && preg_match("/(.*)\n===[=]*\n/m", $content, $matches))
+					($isHtmlish && preg_match(':<h1.*>(.*)</h1>:i', $adat->content, $matches))
+					|| ($isTextish && preg_match("/(.*)\n===[=]*\n/m", $adat->content, $matches))
 				){
-					$name = $matches[1];
-				}elseif($pagePath === $this->homePage){
-					$name = $this->name;
+					$adat->setName($matches[1]);
+				}elseif($adat->pagePath === $this->homePage){
+					$adat->setName($this->name);
 				}else{
 					//--use path as name
-					$name = $file->getPath();
+					$adat->setName($adat->file->getPath());
 					//---without extension
-					$fileExtension = pathinfo($file->getPath(), PATHINFO_EXTENSION);
+					$fileExtension = pathinfo($adat->file->getPath(), PATHINFO_EXTENSION);
 					if($fileExtension){
-						$name = substr($name, 0, -1 * (strlen($fileExtension) + 1));
+						$adat->setName(substr($adat->name, 0, -1 * (strlen($fileExtension) + 1)));
 					}
 					//---switch '/' to '-', reverse
-					$name = implode(' - ', array_reverse(explode('/', $name)));
+					$adat->setName(implode(' - ', array_reverse(explode('/', $adat->name))));
 					//---title case
-					$name = ucwords($name);
+					$adat->setName(ucwords($adat->name));
 				}
-				if($isHtmlish && strpos($content, '<h1') === false){
-					$content = "<h1>{$name}</h1>\n{$content}";
-				}elseif($isTextish && strpos($content, "\n===") === false){
-					$content = "{$name}\n==========\n\n{$content}";
+				if($isHtmlish && strpos($adat->content, '<h1') === false){
+					$adat->setContent("<h1>{$adat->name}</h1>\n{$adat->content}");
+				}elseif($isTextish && strpos($adat->content, "\n===") === false){
+					$adat->setContent("{$adat->name}\n==========\n\n{$adat->content}");
 				}
 			}
-			if($viewTemplate){
-				$data = [
-					'format'=> $extension,
-					'name'=> $name,
-					'content'=> $content,
-					'pagePath'=> substr($pagePath, 1),
-					'shellTemplate'=> $this->getTemplateForExtension($this->shellTemplate, $extension),
+			if($adat->viewTemplate){
+				$adat->setData([
+					'format'=> $adat->extension,
+					'name'=> $adat->name,
+					'content'=> $adat->content,
+					'pagePath'=> substr($adat->pagePath, 1),
+					'shellTemplate'=> $this->getTemplateForExtension($this->shellTemplate, $adat->extension),
 					'wikiName'=> $this->name,
 					'wikiRoute'=> $this->viewRoute,
-				];
+				]);
 				if($this->getEventDispatcher()){
-					$event = new ViewDataEvent($data, $path);
-					$this->getEventDispatcher()->dispatch($event);
-					$data = $event->getData();
+					$this->getEventDispatcher()->dispatch(new ViewDataEvent($adat));
 				}
-				$content = $this->twig->render($viewTemplate, $data);
+				$adat->setContent($this->twig->render($adat->viewTemplate, $adat->data));
 			}elseif($isHtmlish){
-				$content = "<!doctype html><title>{$name} - {$this->name}</title>{$content}";
+				$adat->setContent("<!doctype html><title>{$adat->name} - {$this->name}</title>{$adat->content}");
 			}
 			if($this->getEventDispatcher()){
-				$event = new ViewContentEvent($content, $path);
-				$this->getEventDispatcher()->dispatch($event);
-				$content = $event->getContent();
+				$this->getEventDispatcher()->dispatch(new ViewContentEvent($adat));
 			}
-			$response->setContent($content);
-			$response->headers->set('Content-Type', $this->getMimeType($extension));
-			return $response;
+			$adat->setResponse(new Response());
+			$adat->response->setContent($adat->content);
+			$adat->response->headers->set('Content-Type', $this->getMimeType($adat->extension));
+			return $adat->response;
 		}
 		throw new NotFoundHttpException();
 	}
