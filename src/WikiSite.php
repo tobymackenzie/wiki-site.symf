@@ -122,8 +122,8 @@ class WikiSite{
 			}
 			$isHtmlish = $adat->isHtmlish();
 			$isTextish = $adat->isTextish();
-			$adat->setViewTemplate($this->getTemplateForExtension($this->viewTemplate, $adat->extension));
-			if($adat->viewTemplate || $isHtmlish || $isTextish){
+			$adat->setTemplate($this->getTemplateForExtension($this->viewTemplate, $adat->extension));
+			if($adat->template || $isHtmlish || $isTextish){
 				if(
 					($isHtmlish && preg_match(':<h1.*>(.*)</h1>:i', $adat->content, $matches))
 					|| ($isTextish && preg_match("/(.*)\n===[=]*\n/m", $adat->content, $matches))
@@ -150,7 +150,7 @@ class WikiSite{
 					$adat->setContent("{$adat->name}\n==========\n\n{$adat->content}");
 				}
 			}
-			if($adat->viewTemplate){
+			if($adat->template){
 				$adat->setData([
 					'format'=> $adat->extension,
 					'name'=> $adat->name,
@@ -163,7 +163,7 @@ class WikiSite{
 				if($this->getEventDispatcher()){
 					$this->getEventDispatcher()->dispatch(new ViewDataEvent($adat));
 				}
-				$adat->setContent($this->twig->render($adat->viewTemplate, $adat->data));
+				$adat->setContent($this->twig->render($adat->template, $adat->data));
 			}elseif($isHtmlish){
 				$adat->setContent("<!doctype html><title>{$adat->name} - {$this->name}</title>{$adat->content}");
 			}
