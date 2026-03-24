@@ -106,8 +106,7 @@ class WikiSite{
 					|| $this->canConvertFile($adat->file, $adat->extension)
 				)
 			){
-				$adat->setPath(explode('.', $adat->path, -1));
-				$adat->setPath(implode('.', $adat->path) . '.' . strtolower($adat->extension));
+				$adat->setPath(implode('.', explode('.', $adat->path, -1)) . '.' . strtolower($adat->extension));
 				return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $adat->path]), 302);
 			}
 			if(empty($adat->extension)){
