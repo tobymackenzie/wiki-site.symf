@@ -11,8 +11,8 @@ class ViewActionEvent extends Event{
 	public function getContent(){
 		return $this->data->content;
 	}
-	public function getData(){
-		return $this->data->data;
+	public function getData($key = null){
+		return $this->data->getData($key);
 	}
 	public function getPath(){
 		return $this->data->path;

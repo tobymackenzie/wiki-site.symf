@@ -163,7 +163,7 @@ class WikiSite{
 				if($this->getEventDispatcher()){
 					$this->getEventDispatcher()->dispatch(new ViewDataEvent($adat));
 				}
-				$adat->setContent($this->twig->render($adat->template, $adat->data));
+				$adat->setContent($this->twig->render($adat->template, $adat->getData()));
 			}elseif($isHtmlish){
 				$adat->setContent("<!doctype html><title>{$adat->name} - {$this->name}</title>{$adat->content}");
 			}

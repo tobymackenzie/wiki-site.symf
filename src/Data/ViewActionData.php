@@ -6,7 +6,7 @@ use TJM\Wiki\File;
 class ViewActionData{
 	public ?string $canonical = null;
 	public ?string $content = null;
-	public array $data = [];
+	protected array $data = [];
 	public ?string $extension = null;
 	public ?File $file = null;
 	public ?string $name = null;
@@ -49,8 +49,25 @@ class ViewActionData{
 	public function setContent(string $content){
 		$this->content = $content;
 	}
-	public function setData(array $data){
-		$this->data = $data;
+	public function getData($key = null){
+		if($key === null){
+			return $this->data;
+		}else{
+			return $this->data[$key] ?? null;
+		}
+	}
+	public function setData($a, $b = null){
+		if(is_array($a)){
+			if($b){
+				$this->data = $a;
+			}else{
+				foreach($a as $key=> $value){
+					$this->data[$key] = $value;
+				}
+			}
+		}else{
+			$this->data[$a] = $b;
+		}
 	}
 	public function setExtension(string $extension){
 		$this->extension = $extension;
