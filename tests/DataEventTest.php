@@ -29,7 +29,7 @@ class DataEventTest extends TestCase{
 			]
 		);
 	}
-	public function testModifyContent(){
+	public function testModifyFullData(){
 		$wsite = $this->getWikiSite();
 		$wsite->getWiki()->writeFile(new File([
 			'path'=> '/foo.md',
@@ -39,6 +39,20 @@ class DataEventTest extends TestCase{
 			$data = $event->getData();
 			$data['content'] = 'prefix: ' . $data['content'] . ' suffix';
 			$event->setData($data);
+		});
+		$response = $wsite->viewAction('/foo.txt');
+		$this->assertEquals(200, $response->getStatusCode());
+		$this->assertEquals("txt\nprefix: Foo\n==========\n\nhello *world*\n suffix\ntxtend\n", $response->getContent());
+	}
+	public function testModifyContentByKey(){
+		$wsite = $this->getWikiSite();
+		$wsite->getWiki()->writeFile(new File([
+			'path'=> '/foo.md',
+			'content'=> '<span>hello</span> <i>world</i>',
+		]));
+		$wsite->getEventDispatcher()->addListener(ViewDataEvent::class, function(ViewDataEvent $event){
+			$content = 'prefix: ' . $event->getData('content') . ' suffix';
+			$event->setData('content', $content);
 		});
 		$response = $wsite->viewAction('/foo.txt');
 		$this->assertEquals(200, $response->getStatusCode());
