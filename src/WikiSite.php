@@ -17,6 +17,7 @@ use TJM\WikiSite\Data\ViewActionData;
 use TJM\WikiSite\FormatConverter\ConverterInterface;
 use TJM\WikiSite\Event\ViewContentEvent;
 use TJM\WikiSite\Event\ViewDataEvent;
+use TJM\WikiSite\Event\ViewStartEvent;
 use Twig\Environment as Twig_Environment;
 
 class WikiSite{
@@ -59,6 +60,9 @@ class WikiSite{
 	=====*/
 	public function viewAction($path){
 		$adat = new ViewActionData($path, $this->homePage);
+		if($this->getEventDispatcher()){
+			$this->getEventDispatcher()->dispatch(new ViewStartEvent($adat));
+		}
 		if($adat->canonical){
 			return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $adat->canonical]), 302);
 		}
@@ -121,8 +125,10 @@ class WikiSite{
 			}
 			$isHtmlish = $adat->isHtmlish();
 			$isTextish = $adat->isTextish();
-			$adat->setTemplate($this->getTemplateForExtension($this->viewTemplate, $adat->extension));
-			if($adat->template || $isHtmlish || $isTextish){
+			if(!$adat->getTemplate()){
+				$adat->setTemplate($this->getTemplateForExtension($this->viewTemplate, $adat->extension));
+			}
+			if($adat->getTemplate() || $isHtmlish || $isTextish){
 				if(
 					($isHtmlish && preg_match(':<h1.*>(.*)</h1>:i', $adat->content, $matches))
 					|| ($isTextish && preg_match("/(.*)\n===[=]*\n/m", $adat->content, $matches))
@@ -149,7 +155,7 @@ class WikiSite{
 					$adat->setContent("{$adat->name}\n==========\n\n{$adat->content}");
 				}
 			}
-			if($adat->template){
+			if($adat->getTemplate()){
 				$adat->setData([
 					'format'=> $adat->extension,
 					'name'=> $adat->name,
@@ -162,7 +168,7 @@ class WikiSite{
 				if($this->getEventDispatcher()){
 					$this->getEventDispatcher()->dispatch(new ViewDataEvent($adat));
 				}
-				$adat->setContent($this->twig->render($adat->template, $adat->getData()));
+				$adat->setContent($this->twig->render($adat->getTemplate(), $adat->getData()));
 			}elseif($isHtmlish){
 				$adat->setContent("<!doctype html><title>{$adat->name} - {$this->name}</title>{$adat->content}");
 			}

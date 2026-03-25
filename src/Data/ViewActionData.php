@@ -14,7 +14,7 @@ class ViewActionData{
 	public ?string $path = null;
 	public string $rawPath;
 	public ?Response $response = null;
-	public ?string $template = null;
+	protected ?string $template = null;
 
 	public function __construct(string $path, string $homePage){
 		$this->rawPath = $path;
@@ -83,6 +83,9 @@ class ViewActionData{
 	}
 	public function setResponse(Response $response){
 		$this->response = $response;
+	}
+	public function getTemplate(){
+		return $this->template;
 	}
 	public function setTemplate(?string $template){
 		$this->template = $template;

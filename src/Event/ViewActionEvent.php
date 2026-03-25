@@ -17,4 +17,7 @@ class ViewActionEvent extends Event{
 	public function getPath(){
 		return $this->data->path;
 	}
+	public function getTemplate(){
+		return $this->data->getTemplate();
+	}
 }
