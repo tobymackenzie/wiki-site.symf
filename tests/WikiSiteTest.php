@@ -12,7 +12,7 @@ use TJM\WikiSite\FormatConverter\MarkdownToHtmlConverter;
 use TJM\WikiSite\WikiSite;
 
 class WikiSiteTest extends TestCase{
-	use TestTrait;
+	use TestTrait, TwigTestTrait;
 	protected $mdTemplatePrefix = '';
 	protected $txtTemplatePrefix = '';
 	protected $txtTemplateSuffix = '';
@@ -73,6 +73,26 @@ class WikiSiteTest extends TestCase{
 		$response = $wsite->viewAction('/foo.md');
 		$this->assertEquals(200, $response->getStatusCode());
 		$this->assertEquals($this->mdTemplatePrefix . "Foo\n==========\n\nhello *world*. `<span>`, &c.\n", $response->getContent());
+	}
+	public function testMarkdownWithFrontMatter(){
+		$wsite = new WikiSite(
+			new Wiki([
+				'path'=> __DIR__ . '/resources',
+			]),
+			[
+				'converters'=> [
+					new HtmlToMarkdownConverter(),
+					new MarkdownToCleanMarkdownConverter(),
+					new MarkdownToHtmlConverter(/*$converter*/),
+				],
+				'twig'=> $this->getTwig(),
+				'viewTemplate'=> '@TJMWikiSite/meta',
+			]
+		);
+		$response = $wsite->viewAction('/meta.txt');
+		$this->assertEquals(200, $response->getStatusCode());
+		$this->assertStringContainsString('Comment: This is top matter', $response->getContent());
+		$this->assertStringContainsString('Meta2: This is meta 2', $response->getContent());
 	}
 	public function testGetPagePaths(){
 		$wsite = new WikiSite(
