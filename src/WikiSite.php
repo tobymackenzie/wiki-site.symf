@@ -62,6 +62,9 @@ class WikiSite{
 		$adat = new ViewActionData($path, $this->homePage);
 		if($this->getEventDispatcher()){
 			$this->getEventDispatcher()->dispatch(new ViewStartEvent($adat));
+			if($adat->getResponse()){
+				return $adat->getResponse();
+			}
 		}
 		if($adat->getCanonical()){
 			return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $adat->getCanonical()]), 302);
@@ -170,6 +173,9 @@ class WikiSite{
 				]);
 				if($this->getEventDispatcher()){
 					$this->getEventDispatcher()->dispatch(new ViewDataEvent($adat));
+					if($adat->getResponse()){
+						return $adat->getResponse();
+					}
 				}
 				$adat->setContent($this->twig->render($adat->getTemplate(), $adat->getData()));
 			}elseif($isHtmlish){
@@ -177,6 +183,9 @@ class WikiSite{
 			}
 			if($this->getEventDispatcher()){
 				$this->getEventDispatcher()->dispatch(new ViewContentEvent($adat));
+				if($adat->getResponse()){
+					return $adat->getResponse();
+				}
 			}
 			$adat->setResponse(new Response());
 			$adat->getResponse()->setContent($adat->getContent());

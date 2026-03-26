@@ -1,5 +1,6 @@
 <?php
 namespace TJM\WikiSite\Event;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\EventDispatcher\Event;
 use TJM\WikiSite\Data\ViewActionData;
 
@@ -16,6 +17,9 @@ class ViewActionEvent extends Event{
 	}
 	public function getPath(){
 		return $this->data->getPath();
+	}
+	public function setResponse(Response $response){
+		$this->data->setResponse($response);
 	}
 	public function getTemplate(){
 		return $this->data->getTemplate();
