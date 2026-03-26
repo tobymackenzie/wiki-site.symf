@@ -9,13 +9,13 @@ class ViewActionEvent extends Event{
 		$this->data = $data;
 	}
 	public function getContent(){
-		return $this->data->content;
+		return $this->data->getContent();
 	}
 	public function getData($key = null){
 		return $this->data->getData($key);
 	}
 	public function getPath(){
-		return $this->data->path;
+		return $this->data->getPath();
 	}
 	public function getTemplate(){
 		return $this->data->getTemplate();

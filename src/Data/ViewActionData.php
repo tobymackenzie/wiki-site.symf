@@ -4,16 +4,16 @@ use Symfony\Component\HttpFoundation\Response;
 use TJM\Wiki\File;
 
 class ViewActionData{
-	public ?string $canonical = null;
-	public ?string $content = null;
+	protected ?string $canonical = null;
+	protected ?string $content = null;
 	protected array $data = [];
-	public ?string $extension = null;
-	public ?File $file = null;
-	public ?string $name = null;
-	public ?string $pagePath = null;
-	public ?string $path = null;
-	public string $rawPath;
-	public ?Response $response = null;
+	protected ?string $extension = null;
+	protected ?File $file = null;
+	protected ?string $name = null;
+	protected ?string $pagePath = null;
+	protected ?string $path = null;
+	protected string $rawPath;
+	protected ?Response $response = null;
 	protected ?string $template = null;
 
 	public function __construct(string $path, string $homePage){
@@ -43,8 +43,14 @@ class ViewActionData{
 	public function isTextish(){
 		return $this->extension === 'md' || $this->extension === 'txt';
 	}
+	public function getCanonical(){
+		return $this->canonical;
+	}
 	public function setCanonical(?string $path){
 		$this->canonical = $path;
+	}
+	public function getContent(){
+		return $this->content;
 	}
 	public function setContent(string $content){
 		$this->content = $content;
@@ -69,17 +75,38 @@ class ViewActionData{
 			$this->data[$a] = $b;
 		}
 	}
+	public function getExtension(){
+		return $this->extension;
+	}
 	public function setExtension(string $extension){
 		$this->extension = $extension;
+	}
+	public function getFile(){
+		return $this->file;
 	}
 	public function setFile(File $file){
 		$this->file = $file;
 	}
+	public function getName(){
+		return $this->name;
+	}
 	public function setName(string $name){
 		$this->name = $name;
 	}
+	public function getPagePath(){
+		return $this->pagePath;
+	}
+	public function setPagePath(string $path){
+		$this->pagePath = $path;
+	}
+	public function getPath(){
+		return $this->path;
+	}
 	public function setPath(string $path){
 		$this->path = $path;
+	}
+	public function getResponse(){
+		return $this->response;
 	}
 	public function setResponse(Response $response){
 		$this->response = $response;

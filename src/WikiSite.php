@@ -63,34 +63,34 @@ class WikiSite{
 		if($this->getEventDispatcher()){
 			$this->getEventDispatcher()->dispatch(new ViewStartEvent($adat));
 		}
-		if($adat->canonical){
-			return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $adat->canonical]), 302);
+		if($adat->getCanonical()){
+			return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $adat->getCanonical()]), 302);
 		}
-		if($adat->extension){
-			$adat->setCanonical($this->wiki->getCanonicalPath($adat->path));
+		if($adat->getExtension()){
+			$adat->setCanonical($this->wiki->getCanonicalPath($adat->getPath()));
 		}
-		if(empty($adat->canonical)){
-			$adat->setCanonical($this->wiki->getCanonicalPath($adat->pagePath));
-			if($adat->extension){
-				if($this->canConvertFile($this->wiki->getPage($adat->canonical), $adat->extension)){
-					$adat->setCanonical($adat->canonical . '.' . strtolower($adat->extension));
+		if(empty($adat->getCanonical())){
+			$adat->setCanonical($this->wiki->getCanonicalPath($adat->getPagePath()));
+			if($adat->getExtension()){
+				if($this->canConvertFile($this->wiki->getPage($adat->getCanonical()), $adat->getExtension())){
+					$adat->setCanonical($adat->getCanonical() . '.' . strtolower($adat->getExtension()));
 				}else{
 					$adat->setCanonical(null);
 				}
 			}
 		}
-		if($adat->canonical && $adat->canonical !== $adat->path && $adat->canonical !== $adat->pagePath){
-			return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $adat->canonical]), 302);
+		if($adat->getCanonical() && $adat->getCanonical() !== $adat->getPath() && $adat->getCanonical() !== $adat->getPagePath()){
+			return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $adat->getCanonical()]), 302);
 		}
-		if($this->wiki->hasPage($adat->pagePath)){
-			$adat->setFile($this->wiki->getPage($adat->pagePath));
+		if($this->wiki->hasPage($adat->getPagePath())){
+			$adat->setFile($this->wiki->getPage($adat->getPagePath()));
 		}else{
-			if($this->wiki->hasFile($adat->path)){
-				$adat->setFile($this->wiki->getFile($adat->path));
+			if($this->wiki->hasFile($adat->getPath())){
+				$adat->setFile($this->wiki->getFile($adat->getPath()));
 			}
 		}
-		if($adat->file){
-			if(in_array($adat->extension, [
+		if($adat->getFile()){
+			if(in_array($adat->getExtension(), [
 				'htm',
 				'html',
 				'asp',
@@ -100,71 +100,71 @@ class WikiSite{
 				'php',
 				'pl',
 				'rb',
-			]) || substr($adat->path, -1) === '/'){
-				return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $adat->pagePath]), 302);
+			]) || substr($adat->getPath(), -1) === '/'){
+				return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $adat->getPagePath()]), 302);
 			//--force lowercase of extension if uppercase
 			}elseif(
-				$adat->extension && $adat->extension !== strtolower($adat->extension)
+				$adat->getExtension() && $adat->getExtension() !== strtolower($adat->getExtension())
 				&& (
-					strtolower($adat->extension) === strtolower($adat->file->getExtension())
-					|| $this->canConvertFile($adat->file, $adat->extension)
+					strtolower($adat->getExtension()) === strtolower($adat->getFile()->getExtension())
+					|| $this->canConvertFile($adat->getFile(), $adat->getExtension())
 				)
 			){
-				$adat->setPath(implode('.', explode('.', $adat->path, -1)) . '.' . strtolower($adat->extension));
-				return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $adat->path]), 302);
+				$adat->setPath(implode('.', explode('.', $adat->getPath(), -1)) . '.' . strtolower($adat->getExtension()));
+				return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $adat->getPath()]), 302);
 			}
-			if(empty($adat->extension)){
+			if(empty($adat->getExtension())){
 				$adat->setExtension('html');
 			}
-			if($this->canConvertFile($adat->file, $adat->extension)){
-				$adat->setContent($this->convertFile($adat->file, $adat->extension));
-			}elseif($adat->extension === $adat->file->getExtension()){
-				$adat->setContent($adat->file->getContent());
+			if($this->canConvertFile($adat->getFile(), $adat->getExtension())){
+				$adat->setContent($this->convertFile($adat->getFile(), $adat->getExtension()));
+			}elseif($adat->getExtension() === $adat->getFile()->getExtension()){
+				$adat->setContent($adat->getFile()->getContent());
 			}else{
 				throw new NotFoundHttpException();
 			}
 			$isHtmlish = $adat->isHtmlish();
 			$isTextish = $adat->isTextish();
 			if(!$adat->getTemplate()){
-				$adat->setTemplate($this->getTemplateForExtension($this->viewTemplate, $adat->extension));
+				$adat->setTemplate($this->getTemplateForExtension($this->viewTemplate, $adat->getExtension()));
 			}
 			if($adat->getTemplate() || $isHtmlish || $isTextish){
 				if(
-					($isHtmlish && preg_match(':<h1.*>(.*)</h1>:i', $adat->content, $matches))
-					|| ($isTextish && preg_match("/(.*)\n===[=]*\n/m", $adat->content, $matches))
+					($isHtmlish && preg_match(':<h1.*>(.*)</h1>:i', $adat->getContent(), $matches))
+					|| ($isTextish && preg_match("/(.*)\n===[=]*\n/m", $adat->getContent(), $matches))
 				){
 					$adat->setName($matches[1]);
-				}elseif($adat->pagePath === $this->homePage){
+				}elseif($adat->getPagePath() === $this->homePage){
 					$adat->setName($this->name);
 				}else{
 					//--use path as name
-					$adat->setName($adat->file->getPath());
+					$adat->setName($adat->getFile()->getPath());
 					//---without extension
-					$fileExtension = pathinfo($adat->file->getPath(), PATHINFO_EXTENSION);
+					$fileExtension = pathinfo($adat->getFile()->getPath(), PATHINFO_EXTENSION);
 					if($fileExtension){
-						$adat->setName(substr($adat->name, 0, -1 * (strlen($fileExtension) + 1)));
+						$adat->setName(substr($adat->getName(), 0, -1 * (strlen($fileExtension) + 1)));
 					}
 					//---switch '/' to '-', reverse
-					$adat->setName(implode(' - ', array_reverse(explode('/', $adat->name))));
+					$adat->setName(implode(' - ', array_reverse(explode('/', $adat->getName()))));
 					//---title case
-					$adat->setName(ucwords($adat->name));
+					$adat->setName(ucwords($adat->getName()));
 				}
-				if($isHtmlish && strpos($adat->content, '<h1') === false){
-					$adat->setContent("<h1>{$adat->name}</h1>\n{$adat->content}");
-				}elseif($isTextish && strpos($adat->content, "\n===") === false){
-					$adat->setContent("{$adat->name}\n==========\n\n{$adat->content}");
+				if($isHtmlish && strpos($adat->getContent(), '<h1') === false){
+					$adat->setContent("<h1>{$adat->getName()}</h1>\n{$adat->getContent()}");
+				}elseif($isTextish && strpos($adat->getContent(), "\n===") === false){
+					$adat->setContent("{$adat->getName()}\n==========\n\n{$adat->getContent()}");
 				}
 			}
 			if($adat->getTemplate()){
-				if($adat->file && $adat->file->getMeta()){
-					$adat->setData($adat->file->getMeta());
+				if($adat->getFile() && $adat->getFile()->getMeta()){
+					$adat->setData($adat->getFile()->getMeta());
 				}
 				$adat->setData([
-					'format'=> $adat->extension,
-					'name'=> $adat->name,
-					'content'=> $adat->content,
-					'pagePath'=> substr($adat->pagePath, 1),
-					'shellTemplate'=> $this->getTemplateForExtension($this->shellTemplate, $adat->extension),
+					'format'=> $adat->getExtension(),
+					'name'=> $adat->getName(),
+					'content'=> $adat->getContent(),
+					'pagePath'=> substr($adat->getPagePath(), 1),
+					'shellTemplate'=> $this->getTemplateForExtension($this->shellTemplate, $adat->getExtension()),
 					'wikiName'=> $this->name,
 					'wikiRoute'=> $this->viewRoute,
 				]);
@@ -173,15 +173,15 @@ class WikiSite{
 				}
 				$adat->setContent($this->twig->render($adat->getTemplate(), $adat->getData()));
 			}elseif($isHtmlish){
-				$adat->setContent("<!doctype html><title>{$adat->name} - {$this->name}</title>{$adat->content}");
+				$adat->setContent("<!doctype html><title>{$adat->getName()} - {$this->name}</title>{$adat->getContent()}");
 			}
 			if($this->getEventDispatcher()){
 				$this->getEventDispatcher()->dispatch(new ViewContentEvent($adat));
 			}
 			$adat->setResponse(new Response());
-			$adat->response->setContent($adat->content);
-			$adat->response->headers->set('Content-Type', $this->getMimeType($adat->extension));
-			return $adat->response;
+			$adat->getResponse()->setContent($adat->getContent());
+			$adat->getResponse()->headers->set('Content-Type', $this->getMimeType($adat->getExtension()));
+			return $adat->getResponse();
 		}
 		throw new NotFoundHttpException();
 	}
