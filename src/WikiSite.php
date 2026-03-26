@@ -221,6 +221,14 @@ class WikiSite{
 	}
 
 	/*=====
+	==plugins
+	=====*/
+	//-# currently plugins are just subscribers (see [subscriber docs](https://symfony.com/doc/6.4/components/event_dispatcher.html#using-event-subscribers))
+	public function addPlugin(PluginInterface $plugin){
+		$this->getEventDispatcher()->addSubscriber($plugin);
+	}
+
+	/*=====
 	==routing
 	=====*/
 	public function getPagePaths(){
