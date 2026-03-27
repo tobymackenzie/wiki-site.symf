@@ -85,10 +85,10 @@ class WikiSite{
 		if($adat->getCanonical() && $adat->getCanonical() !== $adat->getPath() && $adat->getCanonical() !== $adat->getPagePath()){
 			return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $adat->getCanonical()]), 302);
 		}
-		if($this->wiki->hasPage($adat->getPagePath())){
-			$adat->setFile($this->wiki->getPage($adat->getPagePath()));
-		}else{
-			if($this->wiki->hasFile($adat->getPath())){
+		if(!$adat->getFile()){
+			if($this->wiki->hasPage($adat->getPagePath())){
+				$adat->setFile($this->wiki->getPage($adat->getPagePath()));
+			}elseif($this->wiki->hasFile($adat->getPath())){
 				$adat->setFile($this->wiki->getFile($adat->getPath()));
 			}
 		}
@@ -119,19 +119,24 @@ class WikiSite{
 			if(empty($adat->getExtension())){
 				$adat->setExtension('html');
 			}
-			if($this->canConvertFile($adat->getFile(), $adat->getExtension())){
-				$adat->setContent($this->convertFile($adat->getFile(), $adat->getExtension()));
-			}elseif($adat->getExtension() === $adat->getFile()->getExtension()){
-				$adat->setContent($adat->getFile()->getContent());
-			}else{
-				throw new NotFoundHttpException();
-			}
-			$isHtmlish = $adat->isHtmlish();
-			$isTextish = $adat->isTextish();
 			if(!$adat->getTemplate()){
 				$adat->setTemplate($this->getTemplateForExtension($this->viewTemplate, $adat->getExtension()));
 			}
-			if($adat->getTemplate() || $isHtmlish || $isTextish){
+			if(empty($adat->getContent())){
+				if($this->canConvertFile($adat->getFile(), $adat->getExtension())){
+					$adat->setContent($this->convertFile($adat->getFile(), $adat->getExtension()));
+				}elseif($adat->getExtension() === $adat->getFile()->getExtension()){
+					$adat->setContent($adat->getFile()->getContent());
+				}else{
+					throw new NotFoundHttpException();
+				}
+				$doRenderContent = true;
+			}else{
+				$doRenderContent = false;
+			}
+			$isHtmlish = $adat->isHtmlish();
+			$isTextish = $adat->isTextish();
+			if(empty($adat->getName()) && ($adat->getTemplate() || $isHtmlish || $isTextish)){
 				if(
 					($isHtmlish && preg_match(':<h1.*>(.*)</h1>:i', $adat->getContent(), $matches))
 					|| ($isTextish && preg_match("/(.*)\n===[=]*\n/m", $adat->getContent(), $matches))
@@ -152,6 +157,8 @@ class WikiSite{
 					//---title case
 					$adat->setName(ucwords($adat->getName()));
 				}
+			}
+			if($doRenderContent && ($adat->getTemplate() || $isHtmlish || $isTextish)){
 				if($isHtmlish && strpos($adat->getContent(), '<h1') === false){
 					$adat->setContent("<h1>{$adat->getName()}</h1>\n{$adat->getContent()}");
 				}elseif($isTextish && strpos($adat->getContent(), "\n===") === false){
@@ -177,9 +184,13 @@ class WikiSite{
 						return $adat->getResponse();
 					}
 				}
-				$adat->setContent($this->twig->render($adat->getTemplate(), $adat->getData()));
-			}elseif($isHtmlish){
-				$adat->setContent("<!doctype html><title>{$adat->getName()} - {$this->name}</title>{$adat->getContent()}");
+			}
+			if($doRenderContent){
+				if($adat->getTemplate()){
+					$adat->setContent($this->twig->render($adat->getTemplate(), $adat->getData()));
+				}elseif($isHtmlish){
+					$adat->setContent("<!doctype html><title>{$adat->getName()} - {$this->name}</title>{$adat->getContent()}");
+				}
 			}
 			if($this->getEventDispatcher()){
 				$this->getEventDispatcher()->dispatch(new ViewContentEvent($adat));

@@ -29,6 +29,33 @@ class ViewStartEventTest extends TestCase{
 			]
 		);
 	}
+	public function testModifyCanonical(){
+		$wsite = $this->getWikiSite();
+		$wsite->getWiki()->writeFile(new File([
+			'path'=> '/foo.md',
+			'content'=> '<span>hello</span> <i>world</i>',
+		]));
+		$wsite->getEventDispatcher()->addListener(ViewStartEvent::class, function(ViewStartEvent $event){
+			$event->setCanonical('/newfoo.txt');
+		});
+		$response = $wsite->viewAction('/foo.txt');
+		$this->assertEquals(302, $response->getStatusCode());
+		$this->assertEquals('/newfoo.txt', $response->getTargetUrl());
+	}
+	public function testModifyPath(){
+		$wsite = $this->getWikiSite();
+		$wsite->getWiki()->writeFile(new File([
+			'path'=> '/foo.md',
+			'content'=> '<span>hello</span> <i>world</i>',
+		]));
+		$wsite->getEventDispatcher()->addListener(ViewStartEvent::class, function(ViewStartEvent $event){
+			$event->setPath('/foo.txt');
+			$event->setPagePath('/foo');
+		});
+		$response = $wsite->viewAction('/nonexistentfoo.txt');
+		$this->assertEquals(200, $response->getStatusCode());
+		$this->assertEquals("txt\nFoo\n==========\n\nhello *world*\n\ntxtend\n", $response->getContent());
+	}
 	public function testModifyTemplate(){
 		$wsite = $this->getWikiSite();
 		$wsite->getWiki()->writeFile(new File([

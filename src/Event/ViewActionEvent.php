@@ -9,19 +9,43 @@ class ViewActionEvent extends Event{
 	public function __construct(ViewActionData $data){
 		$this->data = $data;
 	}
+	public function setCanonical(string $value){
+		$this->data->setCanonical($value);
+	}
 	public function getContent(){
 		return $this->data->getContent();
+	}
+	public function setContent(string $value){
+		$this->data->setContent($value);
+	}
+	public function setData($a, $b = null){
+		$this->data->setData($a, $b);
 	}
 	public function getData($key = null){
 		return $this->data->getData($key);
 	}
+	public function setExtension($extension){
+		$this->data->setExtension($extension);
+	}
+	public function setName($name){
+		$this->data->setName($name);
+	}
+	public function setPagePath($path){
+		$this->data->setPagePath($path);
+	}
 	public function getPath(){
 		return $this->data->getPath();
+	}
+	public function setPath($path){
+		$this->data->setPath($path);
 	}
 	public function setResponse(Response $response){
 		$this->data->setResponse($response);
 	}
 	public function getTemplate(){
 		return $this->data->getTemplate();
+	}
+	public function setTemplate(string $value){
+		$this->data->setTemplate($value);
 	}
 }
