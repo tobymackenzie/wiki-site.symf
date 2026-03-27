@@ -75,6 +75,17 @@ class ViewActionData{
 			$this->data[$a] = $b;
 		}
 	}
+	public function setUnsetData($a, $b = null){
+		if(is_array($a)){
+			foreach($a as $key=> $value){
+				if(!isset($this->data[$key])){
+					$this->data[$key] = $value;
+				}
+			}
+		}elseif(!isset($this->data[$a])){
+			$this->data[$a] = $b;
+		}
+	}
 	public function getExtension(){
 		return $this->extension;
 	}
