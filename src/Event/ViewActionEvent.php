@@ -30,6 +30,12 @@ class ViewActionEvent extends Event{
 	public function setExtension($extension){
 		$this->data->setExtension($extension);
 	}
+	public function getFile(){
+		return $this->data->getFile();
+	}
+	public function setFile($file){
+		$this->data->setFile($file);
+	}
 	public function setName($name){
 		$this->data->setName($name);
 	}
