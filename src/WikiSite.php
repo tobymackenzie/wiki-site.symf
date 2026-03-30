@@ -16,6 +16,7 @@ use TJM\Wiki\File;
 use TJM\WikiSite\Data\ViewActionData;
 use TJM\WikiSite\FormatConverter\ConverterInterface;
 use TJM\WikiSite\Event\ViewContentEvent;
+use TJM\WikiSite\Event\ViewLoadContentEvent;
 use TJM\WikiSite\Event\ViewDataEvent;
 use TJM\WikiSite\Event\ViewStartEvent;
 use Twig\Environment as Twig_Environment;
@@ -131,6 +132,12 @@ class WikiSite{
 					throw new NotFoundHttpException();
 				}
 				$doRenderContent = true;
+				if($this->getEventDispatcher()){
+					$this->getEventDispatcher()->dispatch(new ViewLoadContentEvent($adat));
+					if($adat->getResponse()){
+						return $adat->getResponse();
+					}
+				}
 			}else{
 				$doRenderContent = false;
 			}
