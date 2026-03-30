@@ -24,6 +24,9 @@ class ViewActionEvent extends Event{
 	public function getData($key = null){
 		return $this->data->getData($key);
 	}
+	public function getExtension(){
+		return $this->data->getExtension();
+	}
 	public function setExtension($extension){
 		$this->data->setExtension($extension);
 	}
