@@ -9,6 +9,12 @@ class ViewActionEvent extends Event{
 	public function __construct(ViewActionData $data){
 		$this->data = $data;
 	}
+	public function isHtmlish(){
+		return $this->data->isHtmlish();
+	}
+	public function isTextish(){
+		return $this->data->isTextish();
+	}
 	public function setCanonical(string $value){
 		$this->data->setCanonical($value);
 	}
