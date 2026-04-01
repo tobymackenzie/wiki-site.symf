@@ -27,6 +27,9 @@ class ViewActionEvent extends Event{
 	public function setData($a, $b = null){
 		$this->data->setData($a, $b);
 	}
+	public function setUnsetData($a, $b = null){
+		$this->data->setUnsetData($a, $b);
+	}
 	public function getData($key = null){
 		return $this->data->getData($key);
 	}
