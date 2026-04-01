@@ -8,6 +8,7 @@ class ViewActionData{
 	protected ?string $content = null;
 	protected array $data = [];
 	protected ?string $extension = null;
+	protected array $extra = [];
 	protected ?File $file = null;
 	protected ?string $name = null;
 	protected ?string $pagePath = null;
@@ -92,6 +93,22 @@ class ViewActionData{
 	}
 	public function setExtension(string $extension){
 		$this->extension = $extension;
+	}
+	public function getExtra($key = null){
+		if($key === null){
+			return $this->extra;
+		}else{
+			return $this->extra[$key] ?? null;
+		}
+	}
+	public function setExtra($a, $b = null){
+		if(is_array($a)){
+			foreach($a as $key=> $value){
+				$this->extra[$key] = $value;
+			}
+		}else{
+			$this->extra[$a] = $b;
+		}
 	}
 	public function getFile(){
 		return $this->file;
