@@ -132,7 +132,7 @@ class WikiSite{
 				}else{
 					throw new NotFoundHttpException();
 				}
-				$doRenderContent = true;
+				$adat->setRenderContent(true);
 				if($this->getEventDispatcher()){
 					$this->getEventDispatcher()->dispatch(new ViewLoadContentEvent($adat));
 					if($adat->getResponse()){
@@ -140,7 +140,7 @@ class WikiSite{
 					}
 				}
 			}else{
-				$doRenderContent = false;
+				$adat->setRenderContent(false);
 			}
 			$isHtmlish = $adat->isHtmlish();
 			$isTextish = $adat->isTextish();
@@ -172,7 +172,7 @@ class WikiSite{
 					return $adat->getResponse();
 				}
 			}
-			if($doRenderContent && ($adat->getTemplate() || $isHtmlish || $isTextish)){
+			if($adat->getRenderContent() && ($adat->getTemplate() || $isHtmlish || $isTextish)){
 				if($isHtmlish && strpos($adat->getContent(), '<h1') === false){
 					$adat->setContent("<h1>{$adat->getName()}</h1>\n{$adat->getContent()}");
 				}elseif($isTextish && strpos($adat->getContent(), "\n===") === false){
@@ -199,7 +199,7 @@ class WikiSite{
 					}
 				}
 			}
-			if($doRenderContent){
+			if($adat->getRenderContent()){
 				if($adat->getTemplate()){
 					$adat->setContent($this->twig->render($adat->getTemplate(), $adat->getData()));
 				}elseif($isHtmlish){

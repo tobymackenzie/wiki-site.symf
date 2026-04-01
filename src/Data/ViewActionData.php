@@ -13,6 +13,7 @@ class ViewActionData{
 	protected ?string $pagePath = null;
 	protected ?string $path = null;
 	protected string $rawPath;
+	protected bool $renderContent = true;
 	protected ?Response $response = null;
 	protected ?string $template = null;
 
@@ -115,6 +116,12 @@ class ViewActionData{
 	}
 	public function setPath(string $path){
 		$this->path = $path;
+	}
+	public function getRenderContent(){
+		return $this->renderContent;
+	}
+	public function setRenderContent(bool $val){
+		$this->renderContent = $val;
 	}
 	public function getResponse(){
 		return $this->response;

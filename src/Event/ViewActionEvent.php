@@ -54,6 +54,12 @@ class ViewActionEvent extends Event{
 	public function setPath($path){
 		$this->data->setPath($path);
 	}
+	public function getRenderContent(){
+		return $this->data->getRenderContent();
+	}
+	public function setRenderContent(bool $val){
+		$this->data->setRenderContent($val);
+	}
 	public function setResponse(Response $response){
 		$this->data->setResponse($response);
 	}
