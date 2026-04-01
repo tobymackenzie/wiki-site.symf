@@ -18,6 +18,7 @@ use TJM\WikiSite\FormatConverter\ConverterInterface;
 use TJM\WikiSite\Event\ViewContentEvent;
 use TJM\WikiSite\Event\ViewLoadContentEvent;
 use TJM\WikiSite\Event\ViewDataEvent;
+use TJM\WikiSite\Event\ViewNameEvent;
 use TJM\WikiSite\Event\ViewStartEvent;
 use Twig\Environment as Twig_Environment;
 
@@ -163,6 +164,12 @@ class WikiSite{
 					$adat->setName(implode(' - ', array_reverse(explode('/', $adat->getName()))));
 					//---title case
 					$adat->setName(ucwords($adat->getName()));
+				}
+			}
+			if($this->getEventDispatcher()){
+				$this->getEventDispatcher()->dispatch(new ViewNameEvent($adat));
+				if($adat->getResponse()){
+					return $adat->getResponse();
 				}
 			}
 			if($doRenderContent && ($adat->getTemplate() || $isHtmlish || $isTextish)){
