@@ -54,6 +54,9 @@ class ViewActionEvent extends Event{
 	public function setName($name){
 		$this->data->setName($name);
 	}
+	public function getPagePath(){
+		return $this->data->getPagePath();
+	}
 	public function setPagePath($path){
 		$this->data->setPagePath($path);
 	}
