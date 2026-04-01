@@ -181,7 +181,7 @@ class WikiSite{
 			}
 			if($adat->getTemplate()){
 				if($adat->getFile() && $adat->getFile()->getMeta()){
-					$adat->setData($adat->getFile()->getMeta());
+					$adat->setUnsetData($adat->getFile()->getMeta());
 				}
 				$adat->setData([
 					'format'=> $adat->getExtension(),
