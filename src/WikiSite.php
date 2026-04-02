@@ -69,7 +69,7 @@ class WikiSite{
 			}
 		}
 		if($adat->getCanonical()){
-			return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $adat->getCanonical()]), 302);
+			return new RedirectResponse($this->getRoute($adat->getCanonical()), 302);
 		}
 		if($adat->getExtension()){
 			$adat->setCanonical($this->wiki->getCanonicalPath($adat->getPath()));
@@ -85,7 +85,7 @@ class WikiSite{
 			}
 		}
 		if($adat->getCanonical() && $adat->getCanonical() !== $adat->getPath() && $adat->getCanonical() !== $adat->getPagePath()){
-			return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $adat->getCanonical()]), 302);
+			return new RedirectResponse($this->getRoute($adat->getCanonical()), 302);
 		}
 		if(!$adat->getFile()){
 			if($this->wiki->hasPage($adat->getPagePath())){
@@ -106,7 +106,7 @@ class WikiSite{
 				'pl',
 				'rb',
 			]) || substr($adat->getPath(), -1) === '/'){
-				return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $adat->getPagePath()]), 302);
+				return new RedirectResponse($this->getRoute($adat->getPagePath()), 302);
 			//--force lowercase of extension if uppercase
 			}elseif(
 				$adat->getExtension() && $adat->getExtension() !== strtolower($adat->getExtension())
@@ -116,7 +116,7 @@ class WikiSite{
 				)
 			){
 				$adat->setPath(implode('.', explode('.', $adat->getPath(), -1)) . '.' . strtolower($adat->getExtension()));
-				return new RedirectResponse($this->getRoute($this->viewRoute, ['path'=> $adat->getPath()]), 302);
+				return new RedirectResponse($this->getRoute($adat->getPath()), 302);
 			}
 			if(empty($adat->getExtension())){
 				$adat->setExtension('html');
@@ -274,7 +274,11 @@ class WikiSite{
 		return $paths;
 	}
 	//-! maybe we should just move actions to a regular controller so we don't need this
-	protected function getRoute($name, $opts, $abs = UrlGeneratorInterface::ABSOLUTE_PATH){
+	protected function getRoute($name, $opts = null, $abs = UrlGeneratorInterface::ABSOLUTE_PATH){
+		if(!$opts){
+			$opts = ['path'=> $name];
+			$name = $this->viewRoute;
+		}
 		if($this->router){
 			return str_replace('//', '/', $this->router->generate($name, $opts, $abs));
 		}elseif($name === $this->viewRoute && isset($opts['path'])){
