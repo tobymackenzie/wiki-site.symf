@@ -152,6 +152,8 @@ class WikiSite{
 					$adat->setName($matches[1]);
 				}elseif($adat->getPagePath() === $this->homePage){
 					$adat->setName($this->name);
+				}elseif($adat->getFile() && !empty($adat->getFile()->getMeta('name'))){
+					$adat->setName(ucwords($adat->getFile()->getMeta('name')));
 				}else{
 					//--use path as name
 					$adat->setName($adat->getFile()->getPath());
