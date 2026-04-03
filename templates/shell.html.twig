@@ -2,7 +2,7 @@
 <html lang="en"{% if format == 'xhtml' %} xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"{% endif %}>
 <head>
 	<meta charset="utf-8" />
-	<title>{% if name is defined and name != wikiName %}{{name}} - {% endif %}{{wikiName}}</title>
+	<title>{% if title is defined %}{{title}} - {% elseif name is defined and name != wikiName %}{{name}} - {% endif %}{{wikiName}}</title>
 	<meta content="initial-scale=1,width=device-width" name="viewport" />
 	<link rel="stylesheet" href="{{asset('_assets/styles/public.css')}}" />
 </head>
