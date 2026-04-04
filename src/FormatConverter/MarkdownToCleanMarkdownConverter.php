@@ -195,6 +195,10 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 						$appendLine = true;
 						$handleTmp = true;
 						$inComment = true;
+					//--try to handle elements with markdown content.  won't work well if mixed
+					}elseif(preg_match(':\[.+\]\(.+\):', $line)){
+						$appendLine = true;
+						$handleTmp = false;
 					}else{
 						$appendLine = false;
 						$handleTmp = false;
@@ -207,7 +211,6 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 					if($appendLine){
 						$result[] = $line;
 					}
-					
 				}
 				$result = implode("\n", $result);
 			}else{
