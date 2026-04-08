@@ -127,8 +127,6 @@ class WikiSite{
 			if(empty($adat->getContent())){
 				if($this->canConvertFile($adat->getFile(), $adat->getExtension())){
 					$adat->setContent($this->convertFile($adat->getFile(), $adat->getExtension()));
-				}elseif($adat->getExtension() === $adat->getFile()->getExtension()){
-					$adat->setContent($adat->getFile()->getContent());
 				}else{
 					throw new NotFoundHttpException();
 				}
@@ -239,21 +237,24 @@ class WikiSite{
 	public function addConverter(ConverterInterface $converter){
 		$this->converters[] = $converter;
 	}
-	protected function convertFile(File $file, $to){
+	public function convertFile(File $file, $to){
 		foreach($this->converters as $converter){
 			if($converter->supports($file->getExtension(), $to)){
 				return $converter->convert($file->getContent(), $file->getExtension(), $to);
 			}
 		}
+		if($file->getExtension() === $to){
+			return $file->getContent();
+		}
 		throw new Exception("No converter found to convert from {$file->getExtension()} to {$to}");
 	}
-	protected function canConvertFile(File $file, $to){
+	public function canConvertFile(File $file, $to){
 		foreach($this->converters as $converter){
 			if($converter->supports($file->getExtension(), $to)){
 				return true;
 			}
 		}
-		return false;
+		return $file->getExtension() === $to;
 	}
 
 	/*=====
