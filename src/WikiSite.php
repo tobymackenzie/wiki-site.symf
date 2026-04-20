@@ -244,7 +244,7 @@ class WikiSite{
 			}
 		}
 		if($file->getExtension() === $to){
-			return $file->getContent();
+			return $file->getContent() ?? '';
 		}
 		throw new Exception("No converter found to convert from {$file->getExtension()} to {$to}");
 	}
