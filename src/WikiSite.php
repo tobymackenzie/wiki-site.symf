@@ -239,13 +239,16 @@ class WikiSite{
 		$this->converters[] = $converter;
 	}
 	public function convertFile(File $file, $to){
+		if(!$file->getContent()){
+			return '';
+		}
 		foreach($this->converters as $converter){
 			if($converter->supports($file->getExtension(), $to)){
 				return $converter->convert($file->getContent(), $file->getExtension(), $to);
 			}
 		}
 		if($file->getExtension() === $to){
-			return $file->getContent() ?? '';
+			return $file->getContent();
 		}
 		throw new Exception("No converter found to convert from {$file->getExtension()} to {$to}");
 	}
