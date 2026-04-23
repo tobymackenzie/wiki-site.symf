@@ -1,0 +1,10 @@
+---
+- www: {% if title is defined %}{{title}} - {% elseif name is defined and name != wikiName %}{{name}} - {% endif %}{{wikiName}}{% if canonical is defined %} @ {{canonical}}{% endif %}
+
+---
+
+{% if block('content') is defined %}
+{{block('content')|raw}}
+{% else %}
+{{content|raw}}
+{% endif %}
