@@ -75,7 +75,7 @@ class WikiSite{
 			$adat->setCanonical($this->wiki->getCanonicalPath($adat->getPath()));
 		}
 		if(empty($adat->getCanonical())){
-			$adat->setCanonical($this->wiki->getCanonicalPath($adat->getPagePath()));
+			$adat->setCanonical($this->wiki->getCanonicalPath($adat->getPagePath()) ?? $adat->getPagePath());
 			if($adat->getExtension()){
 				if($this->canConvertFile($adat->getFile() ?? $this->wiki->getPage($adat->getCanonical()), $adat->getExtension())){
 					$adat->setCanonical($adat->getCanonical() . '.' . strtolower($adat->getExtension()));
