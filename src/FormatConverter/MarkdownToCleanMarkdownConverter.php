@@ -237,6 +237,9 @@ class MarkdownToCleanMarkdownConverter implements ConverterInterface{
 			}else{
 				$tmp = preg_replace_callback('@<[\w\-:]+.*>.*</[\w\-:]+>@', $pregCallback, $lineBit);
 				$tmp = preg_replace_callback('@<[\w\-:]+.*/>@', $pregCallback, $tmp);
+				if($this->stripComments){
+					$tmp = preg_replace("@<\!\-\-.*\-\->@sU", "", $tmp);
+				}
 				$newLine .= $tmp;
 			}
 			$inCodeFence = !$inCodeFence;

@@ -28,7 +28,7 @@ Paragraph after pre-code block.
 alert('code block without line break before');
 ```
 
-Paragraph with inline code markdown `<div>hello &amp; goodbye</div>` to test.  I must also say &c.
+Paragraph with inline code markdown `<div>hello &amp; goodbye</div>` to test.  I must<!--more--> also<!--foo--> say &c.
 
 Paragraph with inline code tag `<div>hello &amp; goodbye</div>` to test.  I must also say &c.
 

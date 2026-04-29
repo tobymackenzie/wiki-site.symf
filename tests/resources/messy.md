@@ -30,7 +30,7 @@ We were then given a couple days to create some more.
 Paragraph after pre-code block.
 <pre><code class="language-js">alert('code block without line break before');</code></pre>
 
-Paragraph with inline code markdown `<div>hello &amp; goodbye</div>` to test.  I must also say &c.
+Paragraph with inline code markdown `<div>hello &amp; goodbye</div>` to test.  I must<!--more--> also<!--foo--> say &c.
 
 Paragraph with inline code tag <code>&lt;div&gt;hello &amp;amp; goodbye&lt;/div&gt;</code> to test.  I must also say &c.  
 <!--foo-->
