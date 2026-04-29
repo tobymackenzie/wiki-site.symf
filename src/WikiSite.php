@@ -287,7 +287,12 @@ class WikiSite{
 			$name = $this->viewRoute;
 		}
 		if($this->router){
-			return str_replace('//', '/', $this->router->generate($name, $opts, $abs));
+			$path = $this->router->generate($name, $opts, $abs);
+			//--trim leading double slash that happens in hostless cases
+			if(substr($path, 0, 2) === '//'){
+				$path = substr($path, 1);
+			}
+			return $path;
 		}elseif($name === $this->viewRoute && isset($opts['path'])){
 			return $opts['path'];
 		}
