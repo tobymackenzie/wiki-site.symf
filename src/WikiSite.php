@@ -186,7 +186,7 @@ class WikiSite{
 				$adat->setData([
 					'format'=> $adat->getExtension(),
 					'name'=> $adat->getName(),
-					'canonical'=> $this->router ? $this->router->generate($this->viewRoute, ['path'=> $adat->getCanonical()], RouterInterface::ABSOLUTE_PATH) : $adat->getCanonical(),
+					'canonical'=> $this->router ? $this->router->generate($this->viewRoute, ['path'=> $adat->getCanonical()], $isHtmlish ? RouterInterface::ABSOLUTE_PATH : RouterInterface::ABSOLUTE_URL) : $adat->getCanonical(),
 					'content'=> $adat->getContent(),
 					'pagePath'=> substr($adat->getPagePath(), 1),
 					'shellTemplate'=> $this->getTemplateForExtension($this->shellTemplate, $adat->getExtension()),
