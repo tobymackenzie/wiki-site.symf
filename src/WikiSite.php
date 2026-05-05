@@ -280,8 +280,7 @@ class WikiSite{
 		}
 		return $paths;
 	}
-	//-! maybe we should just move actions to a regular controller so we don't need this
-	protected function getRoute($name, $opts = null, $abs = UrlGeneratorInterface::ABSOLUTE_PATH){
+	public function getRoute($name, $opts = null, $abs = UrlGeneratorInterface::ABSOLUTE_PATH){
 		if(!$opts){
 			$opts = ['path'=> $name];
 			$name = $this->viewRoute;
