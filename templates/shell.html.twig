@@ -3,7 +3,9 @@
 <head>
 	<meta charset="utf-8" />
 	<title>{% if title is defined %}{{title}} - {% elseif name is defined and name != wikiName %}{{name}} - {% endif %}{{wikiName}}</title>
+{% block docMeta %}
 	<meta content="initial-scale=1,width=device-width" name="viewport" />
+{% endblock %}
 	<link rel="stylesheet" href="{{asset('/_assets/styles/public.css')}}" />
 </head>
 <body>
