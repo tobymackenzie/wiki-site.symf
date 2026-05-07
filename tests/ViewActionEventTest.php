@@ -17,20 +17,20 @@ class ViewActionEventTest extends TestCase{
 	use TwigTestTrait;
 
 	protected function getWikiSite(){
-		return new WikiSite(
-			new Wiki([
-				'path'=> __DIR__ . '/resources',
-			]),
-			[
-				'converters'=> [
-					// new HtmlToMarkdownConverter(),
-					// new MarkdownToCleanMarkdownConverter(),
-					new MarkdownToHtmlConverter(),
-				],
-				'eventDispatcher'=> new EventDispatcher(),
-				'twig'=> $this->getTwig(),
-			]
-		);
+		$wiki = new Wiki([
+			'eventDispatcher'=> new EventDispatcher(),
+			'path'=> __DIR__ . '/resources',
+		]);
+		$site = new WikiSite([
+			'converters'=> [
+				// new HtmlToMarkdownConverter(),
+				// new MarkdownToCleanMarkdownConverter(),
+				new MarkdownToHtmlConverter(),
+			],
+			'twig'=> $this->getTwig(),
+		]);
+		$wiki->addPlugin($site);
+		return $site;
 	}
 	public function testViewEventSetName(){
 		$test = $this;

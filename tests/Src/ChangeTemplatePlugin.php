@@ -1,9 +1,9 @@
 <?php
 namespace TJM\WikiSite\Tests\Src;
 use TJM\WikiSite\Event\ViewStartEvent;
-use TJM\WikiSite\PluginInterface;
+use TJM\Wiki\Plugin;
 
-class ChangeTemplatePlugin implements PluginInterface{
+class ChangeTemplatePlugin extends Plugin{
 	static public function getSubscribedEvents(): array{
 		return [
 			ViewStartEvent::class=> 'onViewStart',

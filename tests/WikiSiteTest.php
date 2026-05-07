@@ -18,18 +18,18 @@ class WikiSiteTest extends TestCase{
 	protected $txtTemplateSuffix = '';
 
 	protected function getWikiSite(){
-		return new WikiSite(
-			new Wiki([
-				'path'=> self::$WIKI_DIR,
-			])
-			,[
-				'converters'=> [
-					new HtmlToMarkdownConverter(),
-					new MarkdownToCleanMarkdownConverter(),
-					new MarkdownToHtmlConverter(),
-				],
-			]
-		);
+		$wiki = new Wiki([
+			'path'=> self::$WIKI_DIR,
+		]);
+		$site = new WikiSite([
+			'converters'=> [
+				new HtmlToMarkdownConverter(),
+				new MarkdownToCleanMarkdownConverter(),
+				new MarkdownToHtmlConverter(),
+			],
+		]);
+		$wiki->addPlugin($site);
+		return $site;
 	}
 	static public function getNotFoundViewData(){
 		return [
@@ -75,10 +75,10 @@ class WikiSiteTest extends TestCase{
 		$this->assertEquals($this->mdTemplatePrefix . "Foo\n==========\n\nhello *world*. `<span>`, &c.\n", $response->getContent());
 	}
 	public function testMarkdownWithFrontMatter(){
+		$wiki = new Wiki([
+			'path'=> __DIR__ . '/resources',
+		]);
 		$wsite = new WikiSite(
-			new Wiki([
-				'path'=> __DIR__ . '/resources',
-			]),
 			[
 				'converters'=> [
 					new HtmlToMarkdownConverter(),
@@ -89,17 +89,18 @@ class WikiSiteTest extends TestCase{
 				'viewTemplate'=> '@TJMWikiSite/meta',
 			]
 		);
+		$wiki->addPlugin($wsite);
 		$response = $wsite->viewAction('/meta.txt');
 		$this->assertEquals(200, $response->getStatusCode());
 		$this->assertStringContainsString('Comment: This is top matter', $response->getContent());
 		$this->assertStringContainsString('Meta2: This is meta 2', $response->getContent());
 	}
 	public function testGetPagePaths(){
-		$wsite = new WikiSite(
-			new Wiki([
-				'path'=> __DIR__ . '/resources/www',
-			])
-		);
+		$wiki = new Wiki([
+			'path'=> __DIR__ . '/resources/www',
+		]);
+		$wsite = new WikiSite();
+		$wiki->addPlugin($wsite);
 		$paths = $wsite->getPagePaths();
 		$expect = [
 			'/',

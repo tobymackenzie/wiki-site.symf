@@ -14,19 +14,19 @@ class ContentEventTest extends TestCase{
 	use TestTrait;
 
 	protected function getWikiSite(){
-		return new WikiSite(
-			new Wiki([
-				'path'=> self::$WIKI_DIR,
-			]),
-			[
-				'converters'=> [
-					new HtmlToMarkdownConverter(),
-					new MarkdownToCleanMarkdownConverter(),
-					new MarkdownToHtmlConverter(),
-				],
-				'eventDispatcher'=> new EventDispatcher(),
-			]
-		);
+		$wiki = new Wiki([
+			'eventDispatcher'=> new EventDispatcher(),
+			'path'=> self::$WIKI_DIR,
+		]);
+		$site = new WikiSite([
+			'converters'=> [
+				new HtmlToMarkdownConverter(),
+				new MarkdownToCleanMarkdownConverter(),
+				new MarkdownToHtmlConverter(),
+			],
+		]);
+		$wiki->addPlugin($site);
+		return $site;
 	}
 	public function testModifyContent(){
 		$wsite = $this->getWikiSite();

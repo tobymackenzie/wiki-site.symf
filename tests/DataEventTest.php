@@ -14,20 +14,20 @@ class DataEventTest extends TestCase{
 	use TestTrait, TwigTestTrait;
 
 	protected function getWikiSite(){
-		return new WikiSite(
-			new Wiki([
-				'path'=> self::$WIKI_DIR,
-			]),
-			[
-				'converters'=> [
-					new HtmlToMarkdownConverter(),
-					new MarkdownToCleanMarkdownConverter(),
-					new MarkdownToHtmlConverter(),
-				],
-				'eventDispatcher'=> new EventDispatcher(),
-				'twig'=> $this->getTwig(),
-			]
-		);
+		$wiki = new Wiki([
+			'eventDispatcher'=> new EventDispatcher(),
+			'path'=> self::$WIKI_DIR,
+		]);
+		$site = new WikiSite([
+			'converters'=> [
+				new HtmlToMarkdownConverter(),
+				new MarkdownToCleanMarkdownConverter(),
+				new MarkdownToHtmlConverter(),
+			],
+			'twig'=> $this->getTwig(),
+		]);
+		$wiki->addPlugin($site);
+		return $site;
 	}
 	public function testModifyFullData(){
 		$wsite = $this->getWikiSite();

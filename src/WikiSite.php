@@ -10,9 +10,9 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\Mime\MimeTypes;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use TJM\Wiki\Wiki;
 use TJM\Wiki\File;
+use TJM\Wiki\Plugin;
 use TJM\WikiSite\Data\ViewActionData;
 use TJM\WikiSite\FormatConverter\ConverterInterface;
 use TJM\WikiSite\Event\ViewContentEvent;
@@ -22,10 +22,9 @@ use TJM\WikiSite\Event\ViewNameEvent;
 use TJM\WikiSite\Event\ViewStartEvent;
 use Twig\Environment as Twig_Environment;
 
-class WikiSite{
+class WikiSite extends Plugin{
 	const CONFIG_DIR = __DIR__ . '/../config';
 	protected array $converters = [];
-	protected ?EventDispatcherInterface $eventDispatcher = null;
 	protected string $homePage = '/index';
 	protected ?MimeTypes $mimeTypes = null;
 	protected string $name = 'TJM Wiki';
@@ -34,10 +33,8 @@ class WikiSite{
 	protected ?Twig_Environment $twig = null;
 	protected string $viewRoute = 'tjm_wiki';
 	protected ?string $viewTemplate = '@TJMWikiSite/view';
-	protected Wiki $wiki;
 
-	public function __construct(Wiki $wiki, array $opts = []){
-		$this->wiki = $wiki;
+	public function __construct(array $opts = []){
 		if($opts && is_array($opts)){
 			foreach($opts as $opt=> $value){
 				$this->$opt = $value;
@@ -47,7 +44,7 @@ class WikiSite{
 
 	//-# primarily for testing
 	public function getEventDispatcher(){
-		return $this->eventDispatcher;
+		return $this->wiki->getEventDispatcher();
 	}
 
 	public function getName(){
@@ -62,13 +59,13 @@ class WikiSite{
 	=====*/
 	public function viewAction($path){
 		$adat = new ViewActionData($path, $this->homePage);
-		if($this->getEventDispatcher()){
-			$this->getEventDispatcher()->dispatch(new ViewStartEvent($adat));
+		if($this->wiki->hasEventDispatcher()){
+			$this->wiki->dispatch(new ViewStartEvent($adat));
 			if($adat->getResponse()){
 				return $adat->getResponse();
 			}
 		}
-		if($adat->getCanonical()){
+		if($adat->getCanonical()/* && $adat->getCanonical() !== $path*/){
 			return new RedirectResponse($this->getRoute($adat->getCanonical()), 302);
 		}
 		if($adat->getExtension()){
@@ -131,8 +128,8 @@ class WikiSite{
 					throw new NotFoundHttpException();
 				}
 				$adat->setRenderContent(true);
-				if($this->getEventDispatcher()){
-					$this->getEventDispatcher()->dispatch(new ViewLoadContentEvent($adat));
+				if($this->wiki->hasEventDispatcher()){
+					$this->wiki->dispatch(new ViewLoadContentEvent($adat));
 					if($adat->getResponse()){
 						return $adat->getResponse();
 					}
@@ -166,8 +163,8 @@ class WikiSite{
 					$adat->setName(ucwords($adat->getName()));
 				}
 			}
-			if($this->getEventDispatcher()){
-				$this->getEventDispatcher()->dispatch(new ViewNameEvent($adat));
+			if($this->wiki->hasEventDispatcher()){
+				$this->wiki->dispatch(new ViewNameEvent($adat));
 				if($adat->getResponse()){
 					return $adat->getResponse();
 				}
@@ -193,8 +190,8 @@ class WikiSite{
 					'wikiName'=> $this->name,
 					'wikiRoute'=> $this->viewRoute,
 				]);
-				if($this->getEventDispatcher()){
-					$this->getEventDispatcher()->dispatch(new ViewDataEvent($adat));
+				if($this->wiki->hasEventDispatcher()){
+					$this->wiki->dispatch(new ViewDataEvent($adat));
 					if($adat->getResponse()){
 						return $adat->getResponse();
 					}
@@ -207,8 +204,8 @@ class WikiSite{
 					$adat->setContent("<!doctype html><title>{$adat->getName()} - {$this->name}</title>{$adat->getContent()}");
 				}
 			}
-			if($this->getEventDispatcher()){
-				$this->getEventDispatcher()->dispatch(new ViewContentEvent($adat));
+			if($this->wiki->hasEventDispatcher()){
+				$this->wiki->dispatch(new ViewContentEvent($adat));
 				if($adat->getResponse()){
 					return $adat->getResponse();
 				}
@@ -259,14 +256,6 @@ class WikiSite{
 			}
 		}
 		return $file->getExtension() === $to;
-	}
-
-	/*=====
-	==plugins
-	=====*/
-	//-# currently plugins are just subscribers (see [subscriber docs](https://symfony.com/doc/6.4/components/event_dispatcher.html#using-event-subscribers))
-	public function addPlugin(PluginInterface $plugin){
-		$this->getEventDispatcher()->addSubscriber($plugin);
 	}
 
 	/*=====

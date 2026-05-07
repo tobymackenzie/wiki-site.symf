@@ -14,7 +14,12 @@ services:
     alias: Psr\Log\NullLogger
   Psr\Log\NullLogger: ~
   TJM\Wiki\Wiki:
-    arguments: ['%kernel.project_dir%/tests/tmp']
+    arguments:
+      $opts:
+        path: '%kernel.project_dir%/tests/tmp'
+        eventDispatcher: '@event_dispatcher'
+    calls:
+      - addPlugin: ['@TJM\WikiSite\WikiSite']
   TJM\WikiSite\FormatConverter\MarkdownToHtmlConverter:
     arguments: ['@League\CommonMark\CommonMarkConverter']
   TJM\WikiSite\WikiSite:
@@ -24,6 +29,8 @@ services:
           - '@TJM\WikiSite\FormatConverter\MarkdownToHtmlConverter'
         router: '@router'
         twig: '@twig'
+        #--force instantiate
+        wiki: '@TJM\Wiki\Wiki'
     tags:
       - 'controller.service_arguments'
       -

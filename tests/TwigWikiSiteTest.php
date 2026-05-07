@@ -12,18 +12,18 @@ class TwigWikiSiteTest extends WikiSiteTest{
 	protected $txtTemplatePrefix = "txt\n";
 	protected $txtTemplateSuffix = "\ntxtend\n";
 	protected function getWikiSite(){
-		return new WikiSite(
-			new Wiki([
-				'path'=> self::$WIKI_DIR,
-			]),
-			[
-				'converters'=> [
-					new HtmlToMarkdownConverter(),
-					new MarkdownToCleanMarkdownConverter(),
-					new MarkdownToHtmlConverter(),
-				],
-				'twig'=> $this->getTwig(),
-			]
-		);
+		$wiki = new Wiki([
+			'path'=> self::$WIKI_DIR,
+		]);
+		$site = new WikiSite([
+			'converters'=> [
+				new HtmlToMarkdownConverter(),
+				new MarkdownToCleanMarkdownConverter(),
+				new MarkdownToHtmlConverter(),
+			],
+			'twig'=> $this->getTwig(),
+		]);
+		$wiki->addPlugin($site);
+		return $site;
 	}
 }

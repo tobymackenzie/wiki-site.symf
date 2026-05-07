@@ -17,7 +17,12 @@ services:
     alias: Psr\Log\NullLogger
   Psr\Log\NullLogger: ~
   TJM\Wiki\Wiki:
-    arguments: ['%kernel.project_dir%/wiki']
+    arguments:
+      $opts:
+        path: '%kernel.project_dir%/wiki'
+        eventDispatcher: '@event_dispatcher'
+    calls:
+      - addPlugin: ['@TJM\WikiSite\WikiSite']
   TJM\WikiSite\WikiSite:
     arguments:
       $opts:
@@ -27,6 +32,8 @@ services:
           - '@TJM\WikiSite\FormatConverter\MarkdownToHtmlConverter'
         router: '@router'
         twig: '@twig'
+        #--force instantiate
+        wiki: '@TJM\Wiki\Wiki'
     tags:
       - 'controller.service_arguments'
       -
