@@ -183,7 +183,7 @@ class WikiSite extends Plugin{
 				$adat->setData([
 					'format'=> $adat->getExtension(),
 					'name'=> $adat->getName(),
-					'canonical'=> $this->router ? $this->router->generate($this->viewRoute, ['path'=> $adat->getCanonical()], $isHtmlish ? RouterInterface::ABSOLUTE_PATH : RouterInterface::ABSOLUTE_URL) : $adat->getCanonical(),
+					'canonical'=> $this->getRoute($adat->getCanonical(), null, RouterInterface::ABSOLUTE_URL),
 					'content'=> $adat->getContent(),
 					'pagePath'=> substr($adat->getPagePath(), 1),
 					'shellTemplate'=> $this->getTemplateForExtension($this->shellTemplate, $adat->getExtension()),
@@ -275,11 +275,11 @@ class WikiSite extends Plugin{
 			$name = $this->viewRoute;
 		}
 		if($this->router){
-			$path = $this->router->generate($name, $opts, $abs);
-			//--trim leading double slash that happens in hostless cases
-			if(substr($path, 0, 2) === '//'){
-				$path = substr($path, 1);
+			//--prevent leading double slash that happens in some cases
+			if(substr($opts['path'], 0, 1) === '/'){
+				$opts['path'] = substr($opts['path'], 1);
 			}
+			$path = $this->router->generate($name, $opts, $abs);
 			return $path;
 		}elseif($name === $this->viewRoute && isset($opts['path'])){
 			return $opts['path'];
