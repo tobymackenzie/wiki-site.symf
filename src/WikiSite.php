@@ -261,8 +261,8 @@ class WikiSite extends Plugin{
 	/*=====
 	==routing
 	=====*/
-	public function getPagePaths(){
-		$paths = $this->wiki->getPagePaths();
+	public function getPagePaths(?string $path = null, ?string $find = null, $grep = null, $sort = Wiki::SORT_ASC | Wiki::SORT_ALPHA){
+		$paths = $this->wiki->getPagePaths($path, $find, $grep, $sort);
 		$index = array_search($this->homePage, $paths);
 		if($index !== false){
 			$paths[$index] = '/';
