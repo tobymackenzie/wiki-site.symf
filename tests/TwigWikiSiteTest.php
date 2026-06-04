@@ -11,18 +11,18 @@ class TwigWikiSiteTest extends WikiSiteTest{
 	protected $mdTemplatePrefix = "test\n";
 	protected $txtTemplatePrefix = "txt\n";
 	protected $txtTemplateSuffix = "\ntxtend\n";
-	protected function getWikiSite(){
+	protected function getWikiSite(array $conf = []){
 		$wiki = new Wiki([
 			'path'=> self::$WIKI_DIR,
 		]);
-		$site = new WikiSite([
+		$site = new WikiSite(array_merge([
 			'converters'=> [
 				new HtmlToMarkdownConverter(),
 				new MarkdownToCleanMarkdownConverter(),
 				new MarkdownToHtmlConverter(),
 			],
 			'twig'=> $this->getTwig(),
-		]);
+		], $conf));
 		$wiki->addPlugin($site);
 		return $site;
 	}

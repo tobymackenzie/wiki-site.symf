@@ -17,17 +17,17 @@ class WikiSiteTest extends TestCase{
 	protected $txtTemplatePrefix = '';
 	protected $txtTemplateSuffix = '';
 
-	protected function getWikiSite(){
+	protected function getWikiSite(array $conf = []){
 		$wiki = new Wiki([
 			'path'=> self::$WIKI_DIR,
 		]);
-		$site = new WikiSite([
+		$site = new WikiSite(array_merge([
 			'converters'=> [
 				new HtmlToMarkdownConverter(),
 				new MarkdownToCleanMarkdownConverter(),
 				new MarkdownToHtmlConverter(),
 			],
-		]);
+		], $conf));
 		$wiki->addPlugin($site);
 		return $site;
 	}
