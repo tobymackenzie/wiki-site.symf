@@ -40,6 +40,12 @@ class WikiSiteTest extends TestCase{
 			['/*'],
 		];
 	}
+	public function testGetDomain(){
+		$site = $this->getWikiSite();
+		$this->assertEquals('localhost', $site->getDomain());
+		$site = $this->getWikiSite(['domain'=> 'tobymackenzie.com']);
+		$this->assertEquals('tobymackenzie.com', $site->getDomain());
+	}
 	/**
 	 * @dataProvider getNotFoundViewData
 	 */

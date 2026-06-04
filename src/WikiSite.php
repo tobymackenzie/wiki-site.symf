@@ -25,6 +25,7 @@ use Twig\Environment as Twig_Environment;
 class WikiSite extends Plugin{
 	const CONFIG_DIR = __DIR__ . '/../config';
 	protected array $converters = [];
+	protected ?string $domain = null;
 	protected string $homePage = '/index';
 	protected ?MimeTypes $mimeTypes = null;
 	protected string $name = 'TJM Wiki';
@@ -40,13 +41,18 @@ class WikiSite extends Plugin{
 				$this->$opt = $value;
 			}
 		}
+		if(empty($this->domain)){
+			$this->domain = $_SERVER['SERVER_NAME'] ?? 'localhost';
+		}
 	}
 
+	public function getDomain(){
+		return $this->domain;
+	}
 	//-# primarily for testing
 	public function getEventDispatcher(){
 		return $this->wiki->getEventDispatcher();
 	}
-
 	public function getName(){
 		return $this->name;
 	}
