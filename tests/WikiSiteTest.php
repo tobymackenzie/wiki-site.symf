@@ -37,6 +37,7 @@ class WikiSiteTest extends TestCase{
 			['/bar'],
 			['/fo'],
 			['/foobar'],
+			['/foo.php7'],
 			['/*'],
 		];
 	}
