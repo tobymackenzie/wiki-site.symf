@@ -206,10 +206,15 @@ class WikiSite extends Plugin{
 				}
 			}
 			if($adat->getRenderContent()){
-				if($adat->getTemplate()){
-					$adat->setContent($this->twig->render($adat->getTemplate(), $adat->getData()));
-				}elseif($isHtmlish){
-					$adat->setContent("<!doctype html><title>{$adat->getName()} - {$this->name}</title>{$adat->getContent()}");
+				try{
+					if($adat->getTemplate()){
+						$adat->setContent($this->twig->render($adat->getTemplate(), $adat->getData()));
+					}elseif($isHtmlish){
+						$adat->setContent("<!doctype html><title>{$adat->getName()} - {$this->name}</title>{$adat->getContent()}");
+					}
+				}catch(Exception $e){
+					@trigger_error("Template {$adat->getTemplate()} not found", E_USER_NOTICE);
+					throw new NotFoundHttpException();
 				}
 			}
 			if($this->wiki->hasEventDispatcher()){
