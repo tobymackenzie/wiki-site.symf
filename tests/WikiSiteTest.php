@@ -248,4 +248,29 @@ class WikiSiteTest extends TestCase{
 			$this->assertEquals($expect, $response->getTargetUrl(), "{$path} should redirect to {$expect}.");
 		}
 	}
+
+	//==helpers
+	static public function getCanConvertData(){
+		return [
+			['md'],
+			['html'],
+		];
+	}
+	#[DataProvider('getCanConvertData')]
+	public function testCanConvert($from){
+		$wsite = $this->getWikiSite();
+		$this->assertTrue($wsite->canConvertExtension($from, 'html'));
+	}
+	static public function getCantConvertData(){
+		return [
+			['mdd'],
+			['htmll'],
+			['php7'],
+		];
+	}
+	#[DataProvider('getCantConvertData')]
+	public function testCantConvert($from){
+		$wsite = $this->getWikiSite();
+		$this->assertFalse($wsite->canConvertExtension($from, 'html'));
+	}
 }

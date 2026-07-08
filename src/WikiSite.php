@@ -255,13 +255,16 @@ class WikiSite extends Plugin{
 		}
 		throw new Exception("No converter found to convert from {$file->getExtension()} to {$to}");
 	}
-	public function canConvertFile(File $file, $to){
+	public function canConvertExtension(string $from, string $to){
 		foreach($this->converters as $converter){
-			if($converter->supports($file->getExtension(), $to)){
+			if($converter->supports($from, $to)){
 				return true;
 			}
 		}
-		return $file->getExtension() === $to;
+		return $from === $to;
+	}
+	public function canConvertFile(File $file, $to){
+		return $this->canConvertExtension($file->getExtension(), $to);
 	}
 
 	/*=====
