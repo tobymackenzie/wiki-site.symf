@@ -34,6 +34,18 @@ class WikiSite extends Plugin{
 	protected ?Twig_Environment $twig = null;
 	protected string $viewRoute = 'tjm_wiki';
 	protected ?string $viewTemplate = '@TJMWikiSite/view';
+	//--etc
+	protected array $htmlRedirectExtensions = [
+		'htm',
+		'html',
+		'asp',
+		'cgi',
+		'js',
+		'jsp',
+		'php',
+		'pl',
+		'rb',
+	];
 
 	public function __construct(array $opts = []){
 		if($opts && is_array($opts)){
@@ -98,17 +110,7 @@ class WikiSite extends Plugin{
 			}
 		}
 		if($adat->getFile()){
-			if(in_array($adat->getExtension(), [
-				'htm',
-				'html',
-				'asp',
-				'cgi',
-				'js',
-				'jsp',
-				'php',
-				'pl',
-				'rb',
-			]) || substr($adat->getPath(), -1) === '/'){
+			if(in_array($adat->getExtension(), $this->htmlRedirectExtensions) || substr($adat->getPath(), -1) === '/'){
 				return new RedirectResponse($this->getRoute($adat->getPagePath()), 302);
 			//--force lowercase of extension if uppercase
 			}elseif(
