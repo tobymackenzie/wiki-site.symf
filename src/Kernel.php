@@ -12,7 +12,7 @@ class Kernel extends Base{
 
 	protected $config = WikiSite::CONFIG_DIR . '/config.yml';
 	protected $debug;
-	protected $environment = 'dev';
+	protected $environment;
 	protected $bundlesPath;
 	protected $projectDir;
 	protected $routes = WikiSite::CONFIG_DIR . '/routing.yml';
@@ -36,7 +36,7 @@ class Kernel extends Base{
 		//--default to dev + debug in cli
 		//-# ensures config changes are automatically handled
 		if(!isset($this->environment)){
-			$this->environment = (php_sapi_name() === 'cli' ? 'dev' : 'prod');
+			$this->environment = (substr(php_sapi_name(), 0, 3) === 'cli' ? 'dev' : 'prod');
 		}
 		if(!isset($this->debug)){
 			$this->debug = $this->environment !== 'prod';
