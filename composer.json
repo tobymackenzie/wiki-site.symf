@@ -26,6 +26,7 @@
 		,"league/html-to-markdown": "^5"
 		,"symfony/asset": "^5.4|^6.4"
 		,"symfony/framework-bundle": "^5.4|^6.4"
+			,"symfony/http-foundation": "^5.4|^6.4"
 		,"symfony/mime": "^5.4|^6.4"
 		,"symfony/twig-bundle": "^5.4|^6.4"
 		,"symfony/yaml": "^5.4|^6.4"
