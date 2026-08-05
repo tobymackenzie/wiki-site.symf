@@ -5,6 +5,7 @@ imports:
 
 parameters:
   env(APP_SECRET): 'qwoirekjwruskdfj'
+  env(WIKI_PATH): '%kernel.project_dir%/wiki'
 framework:
   secret: '%env(APP_SECRET)%'
   session: ~
@@ -19,7 +20,7 @@ services:
   TJM\Wiki\Wiki:
     arguments:
       $opts:
-        path: '%kernel.project_dir%/wiki'
+        path: '%env(WIKI_PATH)%'
         eventDispatcher: '@event_dispatcher'
     calls:
       - addPlugin: ['@TJM\WikiSite\WikiSite']
