@@ -156,7 +156,9 @@ class WikiSite extends Plugin{
 				}elseif($adat->getPagePath() === $this->homePage){
 					$adat->setName($this->name);
 				}elseif($adat->getFile() && !empty($adat->getFile()->getMeta('name'))){
-					$adat->setName(ucwords($adat->getFile()->getMeta('name')));
+					$adat->setName(ucwords(
+						str_replace('-', ' ', $adat->getFile()->getMeta('name'))
+					));
 				}else{
 					//--use path as name
 					$adat->setName($adat->getFile()->getPath());
@@ -169,6 +171,8 @@ class WikiSite extends Plugin{
 					$adat->setName(implode(' - ', array_reverse(explode('/', $adat->getName()))));
 					//---title case
 					$adat->setName(ucwords($adat->getName()));
+					//---dashes to spaces
+					$adat->setName(str_replace('-', ' ', $adat->getName()));
 				}
 			}
 			if($this->wiki->hasEventDispatcher()){
