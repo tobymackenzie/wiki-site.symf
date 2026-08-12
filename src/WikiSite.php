@@ -10,6 +10,7 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\Mime\MimeTypes;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Yaml\Yaml;
 use TJM\Wiki\Wiki;
 use TJM\Wiki\File;
 use TJM\Wiki\Plugin;
@@ -24,6 +25,9 @@ use Twig\Environment as Twig_Environment;
 
 class WikiSite extends Plugin{
 	const CONFIG_DIR = __DIR__ . '/../config';
+	protected array $aliases = [];
+	//--path to alias yaml file, must be in wiki path
+	protected string $aliasesPath = '_aliases.yml';
 	protected array $converters = [];
 	protected ?string $domain = null;
 	protected string $homePage = '/index';
@@ -85,6 +89,10 @@ class WikiSite extends Plugin{
 		}
 		if($adat->getCanonical()/* && $adat->getCanonical() !== $path*/){
 			return new RedirectResponse($this->getRoute($adat->getCanonical()), 302);
+		}
+		//--prevent loading aliases
+		if($this->aliasesPath && $path === $this->aliasesPath){
+			throw new NotFoundHttpException();
 		}
 		if($adat->getExtension()){
 			$adat->setCanonical($this->wiki->getCanonicalPath($adat->getPath()));
@@ -167,12 +175,12 @@ class WikiSite extends Plugin{
 					if($fileExtension){
 						$adat->setName(substr($adat->getName(), 0, -1 * (strlen($fileExtension) + 1)));
 					}
+					//---dashes to spaces
+					$adat->setName(str_replace('-', ' ', $adat->getName()));
 					//---switch '/' to '-', reverse
 					$adat->setName(implode(' - ', array_reverse(explode('/', $adat->getName()))));
 					//---title case
 					$adat->setName(ucwords($adat->getName()));
-					//---dashes to spaces
-					$adat->setName(str_replace('-', ' ', $adat->getName()));
 				}
 			}
 			if($this->wiki->hasEventDispatcher()){
@@ -231,6 +239,10 @@ class WikiSite extends Plugin{
 			$adat->getResponse()->setContent($adat->getContent());
 			$adat->getResponse()->headers->set('Content-Type', $this->getMimeType($adat->getExtension()));
 			return $adat->getResponse();
+		}
+		$alias = $this->getAlias($adat->getPagePath(), $adat->getExtension());
+		if($alias){
+			return new RedirectResponse($this->getRoute($alias), 302);
 		}
 		throw new NotFoundHttpException();
 	}
