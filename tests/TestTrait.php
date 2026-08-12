@@ -5,6 +5,7 @@ use Symfony\Component\ErrorHandler\ErrorHandler;
 
 trait TestTrait{
 	static protected $WIKI_DIR = __DIR__ . '/tmp';
+	static protected $FIXED_WIKI_DIR = __DIR__ . '/resources/www';
 
 	static public function setUpBeforeClass(): void{
 		mkdir(self::$WIKI_DIR);

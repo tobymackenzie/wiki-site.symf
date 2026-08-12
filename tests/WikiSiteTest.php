@@ -17,9 +17,9 @@ class WikiSiteTest extends TestCase{
 	protected $txtTemplatePrefix = '';
 	protected $txtTemplateSuffix = '';
 
-	protected function getWikiSite(array $conf = []){
+	protected function getWikiSite(array $conf = [], ?string $wikiPath = null){
 		$wiki = new Wiki([
-			'path'=> self::$WIKI_DIR,
+			'path'=> $wikiPath ?? self::$WIKI_DIR,
 		]);
 		$site = new WikiSite(array_merge([
 			'converters'=> [
@@ -246,6 +246,35 @@ class WikiSiteTest extends TestCase{
 			$response = $wsite->viewAction($path);
 			$this->assertEquals(302, $response->getStatusCode(), "Path should cause a redirect.");
 			$this->assertEquals($expect, $response->getTargetUrl(), "{$path} should redirect to {$expect}.");
+		}
+	}
+
+	//==aliases
+	public function testAlias(){
+		$site = $this->getWikiSite([], self::$FIXED_WIKI_DIR);
+		foreach([
+			'/*'=> '/42',
+			'/*.md'=> '/42.md',
+			'/blog/2004/03/31/waste-recycling-2'=> '/blog/2004/03/31/waste-recycling',
+			'/home'=> '/',
+			'/home.xhtml'=> '/index.xhtml',
+			'/olddir'=> '/dir',
+			'/olddir.txt'=> '/dir.txt',
+		] as $path=> $expect){
+			$response = $site->viewAction($path);
+			$this->assertEquals(302, $response->getStatusCode(), "Path should cause a redirect.");
+			$this->assertEquals($expect, $response->getTargetUrl(), "{$path} should redirect to {$expect}.");
+		}
+	}
+	public function testNotAlias(){
+		$site = $this->getWikiSite([], self::$FIXED_WIKI_DIR);
+		foreach([
+			'/**',
+			'/*/*',
+			'/olddirr',
+		] as $path){
+			$this->expectException(NotFoundHttpException::class);
+			$response = $site->viewAction($path);
 		}
 	}
 

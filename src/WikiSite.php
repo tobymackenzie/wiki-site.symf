@@ -90,7 +90,7 @@ class WikiSite extends Plugin{
 		if($adat->getCanonical()/* && $adat->getCanonical() !== $path*/){
 			return new RedirectResponse($this->getRoute($adat->getCanonical()), 302);
 		}
-		//--prevent loading aliases
+		//--prevent loading aliases file directly
 		if($this->aliasesPath && $path === $this->aliasesPath){
 			throw new NotFoundHttpException();
 		}
@@ -240,6 +240,7 @@ class WikiSite extends Plugin{
 			$adat->getResponse()->headers->set('Content-Type', $this->getMimeType($adat->getExtension()));
 			return $adat->getResponse();
 		}
+		//--look for any aliases, redirect if found
 		$alias = $this->getAlias($adat->getPagePath(), $adat->getExtension());
 		if($alias){
 			return new RedirectResponse($this->getRoute($alias), 302);
@@ -293,6 +294,31 @@ class WikiSite extends Plugin{
 	/*=====
 	==routing
 	=====*/
+	protected function getAlias(string $path, string $format = 'html'){
+		if(empty($this->aliases) && !empty($this->aliasesPath)){
+			$aliases = $this->wiki->getFile($this->aliasesPath);
+			if($aliases && $aliases->getContent()){
+				$this->aliases = Yaml::parse($aliases->getContent());
+			}
+		}
+		if($this->aliases){
+			$id = substr($path, 0, 1) === '/' ? substr($path, 1) : $path;
+			$alias = $this->aliases[$id] ?? null;
+			if($alias !== null){
+				if(strpos($alias, '/') !== 0){
+					$alias = '/' . $alias;
+				}
+				if(substr($alias, 0, 1) === '/' && $format && $format !== 'html'){
+					if($alias === '/'){
+						$alias = $this->homePage;
+					}
+					$alias .= ".{$format}";
+				}
+				return $alias;
+			}
+		}
+		return null;
+	}
 	public function getPagePaths(?string $path = null, ?string $find = null, $grep = null, $sort = Wiki::SORT_ASC | Wiki::SORT_ALPHA){
 		$paths = $this->wiki->getPagePaths($path, $find, $grep, $sort);
 		$index = array_search($this->homePage, $paths);

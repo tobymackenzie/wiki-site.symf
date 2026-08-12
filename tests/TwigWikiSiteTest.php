@@ -11,9 +11,9 @@ class TwigWikiSiteTest extends WikiSiteTest{
 	protected $mdTemplatePrefix = "test\n";
 	protected $txtTemplatePrefix = "txt\n";
 	protected $txtTemplateSuffix = "\ntxtend\n";
-	protected function getWikiSite(array $conf = []){
+	protected function getWikiSite(array $conf = [], ?string $wikiPath = null){
 		$wiki = new Wiki([
-			'path'=> self::$WIKI_DIR,
+			'path'=> $wikiPath ?? self::$WIKI_DIR,
 		]);
 		$site = new WikiSite(array_merge([
 			'converters'=> [
