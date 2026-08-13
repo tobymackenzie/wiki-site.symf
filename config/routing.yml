@@ -1,5 +1,5 @@
 tjm_wiki:
-  path: '{path}'
+  path: '{id}'
   controller: 'TJM\WikiSite\WikiSite::viewAction'
   requirements:
-    path: '.*'
+    id: .*

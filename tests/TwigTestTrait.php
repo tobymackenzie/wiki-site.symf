@@ -14,7 +14,7 @@ trait TwigTestTrait{
 			return $value;
 		}));
 		$twig->addFunction(new TwigFunction('path', function($value, $data){
-			return $data['path'];
+			return $data['id'];
 		}));
 		return $twig;
 	}

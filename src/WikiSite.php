@@ -79,19 +79,19 @@ class WikiSite extends Plugin{
 	/*=====
 	==controller
 	=====*/
-	public function viewAction($path){
-		$adat = new ViewActionData($path, $this->homePage);
+	public function viewAction($id){
+		$adat = new ViewActionData($id, $this->homePage);
 		if($this->wiki->hasEventDispatcher()){
 			$this->wiki->dispatch(new ViewStartEvent($adat));
 			if($adat->getResponse()){
 				return $adat->getResponse();
 			}
 		}
-		if($adat->getCanonical()/* && $adat->getCanonical() !== $path*/){
+		if($adat->getCanonical()/* && $adat->getCanonical() !== $id*/){
 			return new RedirectResponse($this->getRoute($adat->getCanonical()), 302);
 		}
 		//--prevent loading aliases file directly
-		if($this->aliasesPath && $path === $this->aliasesPath){
+		if($this->aliasesPath && $id === $this->aliasesPath){
 			throw new NotFoundHttpException();
 		}
 		if($adat->getExtension()){
@@ -329,18 +329,18 @@ class WikiSite extends Plugin{
 	}
 	public function getRoute($name, $opts = null, $abs = UrlGeneratorInterface::ABSOLUTE_PATH){
 		if(!$opts){
-			$opts = ['path'=> $name];
+			$opts = ['id'=> $name];
 			$name = $this->viewRoute;
 		}
 		if($this->router){
 			//--prevent leading double slash that happens in some cases
-			if(substr($opts['path'], 0, 1) === '/'){
-				$opts['path'] = substr($opts['path'], 1);
+			if(substr($opts['id'], 0, 1) === '/'){
+				$opts['id'] = substr($opts['id'], 1);
 			}
 			$path = $this->router->generate($name, $opts, $abs);
 			return $path;
-		}elseif($name === $this->viewRoute && isset($opts['path'])){
-			return $opts['path'];
+		}elseif($name === $this->viewRoute && isset($opts['id'])){
+			return $opts['id'];
 		}
 	}
 
