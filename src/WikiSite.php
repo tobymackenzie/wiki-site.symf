@@ -12,6 +12,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Yaml\Yaml;
 use TJM\Wiki\Wiki;
+use TJM\Wiki\Exception\InvalidPathException;
 use TJM\Wiki\File;
 use TJM\Wiki\Plugin;
 use TJM\WikiSite\Data\ViewActionData;
@@ -100,10 +101,14 @@ class WikiSite extends Plugin{
 		if(empty($adat->getCanonical())){
 			$adat->setCanonical($this->wiki->getCanonicalPath($adat->getPagePath()) ?? $adat->getPagePath());
 			if($adat->getExtension()){
-				if($this->canConvertFile($adat->getFile() ?? $this->wiki->getPage($adat->getCanonical()), $adat->getExtension())){
-					$adat->setCanonical($adat->getCanonical() . '.' . strtolower($adat->getExtension()));
-				}else{
-					$adat->setCanonical(null);
+				try{
+					if($this->canConvertFile($adat->getFile() ?? $this->wiki->getPage($adat->getCanonical()), $adat->getExtension())){
+						$adat->setCanonical($adat->getCanonical() . '.' . strtolower($adat->getExtension()));
+					}else{
+						$adat->setCanonical(null);
+					}
+				}catch(InvalidPathException $e){
+					throw new NotFoundHttpException();
 				}
 			}
 		}
@@ -111,10 +116,14 @@ class WikiSite extends Plugin{
 			return new RedirectResponse($this->getRoute($adat->getCanonical()), 302);
 		}
 		if(!$adat->getFile()){
-			if($this->wiki->hasPage($adat->getPagePath())){
-				$adat->setFile($this->wiki->getPage($adat->getPagePath()));
-			}elseif($this->wiki->hasFile($adat->getPath())){
-				$adat->setFile($this->wiki->getFile($adat->getPath()));
+			try{
+				if($this->wiki->hasPage($adat->getPagePath())){
+					$adat->setFile($this->wiki->getPage($adat->getPagePath()));
+				}elseif($this->wiki->hasFile($adat->getPath())){
+					$adat->setFile($this->wiki->getFile($adat->getPath()));
+				}
+			}catch(InvalidPathException $e){
+				throw new NotFoundHttpException();
 			}
 		}
 		if($adat->getFile()){
